@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Alexandru Cobuz — fullstack contractor. Fast, lean software. Vanilla JS, Vue, React, Node.js, AWS. Available for part-time contracts.">
+  <title>asset.plus — fullstack contractor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- Boot screen -->
+  <div id="boot-screen" aria-hidden="true"></div>
+
+  <!-- HP Bar (fixed) -->
+  <div id="hp-bar">
+    <div class="hp-bar-row">
+      <span class="hp-label">HP</span>
+      <div class="hp-cells" id="hp-cells"></div>
+      <span id="hp-pct">0%</span>
+    </div>
+    <div id="hp-icons"></div>
+  </div>
+
+  <!-- Day/Night (fixed) -->
+  <button id="day-night" aria-label="Toggle day/night"></button>
+
+  <!-- Now building (fixed) -->
+  <div id="now-building"><span class="nb-prompt">&gt;</span> working on: <span class="nb-proj">lib-router v2</span><span class="nb-cursor">_</span></div>
+
+  <!-- Sticky Get in Touch (fixed) -->
+  <button id="sticky-hire">GET IN TOUCH</button>
+
+  <!-- Scrollable content -->
+  <div id="scroll-root">
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-inner">
+        <span class="nav-logo">asset<span>.</span>plus</span>
+        <div class="avail-bar">
+          <div class="avail-dot on"></div>
+          <div class="avail-dot on"></div>
+          <div class="avail-dot on"></div>
+          <div class="avail-dot on"></div>
+          <div class="avail-dot off"></div>
+          <span class="avail-text">PART-TIME AVAIL</span>
+        </div>
+        <div class="nav-links">
+          <a href="#" class="nav-link" data-target="stack">stack</a>
+          <a href="#" class="nav-link" data-target="packages">packages</a>
+          <a href="#" class="nav-link" data-target="find-me">contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+      <canvas id="hero-bg" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div>
+          <h2 class="sec-label">contractor · fullstack dev</h2>
+          <h1 class="px-title">Alexandru Cobuz</h1>
+          <p class="hero-sub">
+            I build fast, lean software with no unnecessary baggage.<br>
+            <span class="hero-accent">less code = more.</span>
+          </p>
+          <div class="xp-row">
+            <span class="xp-label">XP</span>
+            <div id="xp-bar"></div>
+            <span class="xp-years">+15yrs</span>
+          </div>
+          <div class="hero-cta">
+            <button class="px-btn primary" data-target="find-me">[ HIRE ME ]</button>
+            <button class="px-btn" data-target="packages">[ SEE WORK ↓ ]</button>
+          </div>
+        </div>
+        <div class="avatar-col">
+          <div class="avatar-frame">
+            <div class="avatar-bracket tl"></div>
+            <div class="avatar-bracket tr"></div>
+            <div class="avatar-bracket bl"></div>
+            <div class="avatar-bracket br"></div>
+            <canvas id="avatar-canvas" aria-hidden="true"></canvas>
+          </div>
+          <span class="avatar-label">PLAYER 1</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section id="stack" class="section">
+      <div class="section-inner compact">
+        <h2 class="sec-label">STACK</h2>
+        <div class="chip-group">
+          <span class="chip">Vanilla JS</span><span class="chip">Vue</span><span class="chip">React</span>
+          <span class="chip">CSS</span><span class="chip">WebGL</span><span class="chip">Node.js</span>
+          <span class="chip">REST</span><span class="chip">WebSockets</span><span class="chip">Express</span>
+          <span class="chip">MongoDB</span><span class="chip">Redis</span><span class="chip">S3</span>
+          <span class="chip">AWS</span><span class="chip">Docker</span><span class="chip">CI/CD</span><span
+            class="chip">Lambda</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHILOSOPHY -->
+    <div class="phil-bar">
+      <div class="phil-inner">
+        <div id="philosophy-potions" class="phil-potions"></div>
+        <div>
+          <div class="px-title">full-time by day · open source by night</div>
+          <p class="phil-tagline">less code = more · 0-dep is the aspiration, not the constraint</p>
+        </div>
+        <div class="phil-slots">
+          <span class="phil-slots-label">PART-TIME SLOTS</span>
+          <div class="phil-slots-row">
+            <div class="slot-dot on"></div>
+            <div class="slot-dot on"></div>
+            <div class="slot-dot on"></div>
+            <div class="slot-dot on"></div>
+            <div class="slot-dot off"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACKAGES -->
+    <section id="packages" class="section">
+      <div class="section-inner">
+        <div class="pkgs-header">
+          <span id="packages-gem-icon"></span>
+          <div>
+            <h2 class="sec-label">PACKAGES</h2>
+            <p class="pkgs-sub">open-source · zero-dependency libraries</p>
+          </div>
+        </div>
+        <div id="packages-grid"></div>
+      </div>
+    </section>
+
+    <!-- FIND ME -->
+    <section id="find-me" class="section">
+      <div class="section-inner">
+        <div class="findme-header">
+          <span id="findme-coin-icon"></span>
+          <div>
+            <h2 class="sec-label">FIND ME</h2>
+            <p class="findme-sub">connect · collab · hire</p>
+          </div>
+        </div>
+        <div id="landscape-wrap">
+          <canvas id="landscape-canvas" aria-hidden="true"></canvas>
+        </div>
+        <div class="social-grid">
+          <a href="https://www.linkedin.com/in/alexandru-cobuz/" target="_blank" rel="noopener" class="social-card">
+            <span data-social-icon="linkedin"></span>
+            <div class="px-title">LinkedIn</div>
+            <p class="social-card-sub">Connect with me →</p>
+          </a>
+          <a href="https://x.com/CobuzAlexandru" target="_blank" rel="noopener" class="social-card">
+            <span data-social-icon="twitter"></span>
+            <div class="px-title">Twitter / X</div>
+            <p class="social-card-sub">Follow along →</p>
+          </a>
+          <a href="https://github.com/gamebak" target="_blank" rel="noopener" class="social-card">
+            <span data-social-icon="github"></span>
+            <div class="px-title">GitHub</div>
+            <p class="social-card-sub">Open source work →</p>
+          </a>
+        </div>
+        <div class="avail-status">
+          <div class="avail-pulse"></div>
+          <div>
+            <div class="px-title">AVAILABLE FOR PART-TIME CONTRACTS</div>
+            <p class="avail-detail">Q2 2026 · Fullstack · Remote friendly</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KOI POND -->
+    <section id="pond" class="section">
+      <div class="pond-label-wrap">
+        <h2 class="sec-label">KOI POND</h2>
+      </div>
+      <canvas id="pond-canvas" aria-hidden="true"></canvas>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <span class="px-title footer-copy">asset.plus © 2026</span>
+      <div id="footer-icons"></div>
+    </footer>
+
+  </div><!-- end scroll-root -->
+
+  <script src="app.js"></script>
+</body>
+
+</html>
