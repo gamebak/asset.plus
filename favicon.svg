@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0f1923"/>
+  <!-- corner brackets (orange, mirrors avatar frame style) -->
+  <rect x="2" y="2" width="6" height="2" fill="#ff6600"/>
+  <rect x="2" y="2" width="2" height="6" fill="#ff6600"/>
+  <rect x="24" y="2" width="6" height="2" fill="#ff6600"/>
+  <rect x="28" y="2" width="2" height="6" fill="#ff6600"/>
+  <rect x="2" y="28" width="6" height="2" fill="#ff6600"/>
+  <rect x="2" y="24" width="2" height="6" fill="#ff6600"/>
+  <rect x="24" y="28" width="6" height="2" fill="#ff6600"/>
+  <rect x="28" y="24" width="2" height="6" fill="#ff6600"/>
+  <!-- + symbol (cyan) representing .plus -->
+  <rect x="14" y="8" width="4" height="16" fill="#00ccff"/>
+  <rect x="8" y="14" width="16" height="4" fill="#00ccff"/>
+</svg>
