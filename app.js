@@ -588,6 +588,8 @@ function initIcons() {
   document.getElementById('findme-coin-icon')
     .appendChild(makeCanvas(M.coin, {0:'transparent',1:'#a07010',2:'#f0c030'}, 6));
 
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
   const footer = document.getElementById('footer-icons');
   footer.append(
     makeCanvas(M.star, {0:'transparent',1:'#ffdd00'}, 4),
