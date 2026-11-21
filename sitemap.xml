@@ -32,4 +32,12 @@
     <loc>https://asset.plus/guides/trading-bot-architecture-testing/</loc>
     <lastmod>2026-11-22</lastmod>
   </url>
+  <url>
+    <loc>https://asset.plus/guides/localstorage-done-right/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/opfs-vs-indexeddb-benchmark/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
 </urlset>

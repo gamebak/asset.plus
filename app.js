@@ -92,6 +92,46 @@
   els.forEach(el => io.observe(el));
 })();
 
+// ── Copy buttons on code blocks ──────────────────────────────────
+(() => {
+  const copyText = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // fallback for older browsers / insecure contexts
+      const ta = Object.assign(document.createElement('textarea'), { value: text });
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch {}
+      ta.remove();
+      return ok;
+    }
+  };
+
+  document.querySelectorAll('.cs-code').forEach((fig) => {
+    const code = fig.querySelector('pre code');
+    const bar = fig.querySelector('figcaption');
+    if (!code || !bar) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.addEventListener('click', async () => {
+      const ok = await copyText(code.textContent);
+      btn.textContent = ok ? 'Copied ✓' : 'Press Ctrl+C';
+      btn.classList.toggle('copied', ok);
+      clearTimeout(btn._t);
+      btn._t = setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    });
+    bar.append(btn);
+  });
+})();
+
 // ── Footer year ──────────────────────────────────────────────────
 document.getElementById('footer-year').textContent = new Date().getFullYear();
 

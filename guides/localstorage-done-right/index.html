@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>localStorage Done Right: Expiration, Quota Errors &amp; Cross-Tab Sync</title>
+  <meta name="description" content="Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/localstorage-done-right/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/localstorage-done-right/">
+  <meta property="og:title" content="localStorage done right: a safe 30-line wrapper">
+  <meta property="og:description" content="Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.">
+  <meta property="og:image" content="https://asset.plus/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="localStorage done right: a safe 30-line wrapper">
+  <meta name="twitter:description" content="Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.">
+  <meta name="twitter:image" content="https://asset.plus/assets/og.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://asset.plus/guides/localstorage-done-right/#article",
+      "headline": "localStorage done right: a safe 30-line wrapper",
+      "description": "Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.",
+      "image": "https://asset.plus/assets/og.jpg",
+      "datePublished": "2026-11-22",
+      "dateModified": "2026-11-22",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/localstorage-done-right/",
+      "about": [
+        "localStorage",
+        "Web Storage API",
+        "JavaScript",
+        "Browser storage",
+        "QuotaExceededError",
+        "Cross-tab sync"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "localStorage done right",
+          "item": "https://asset.plus/guides/localstorage-done-right/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much data can localStorage store?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Around 5 MB per origin in most browsers, stored as UTF-16 strings, so the practical limit for your data is often lower. When you go over, setItem throws a QuotaExceededError, which is why every write should be wrapped in try/catch."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does localStorage expire?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Data stays until your code or the user clears it. To expire values, store a timestamp next to the data and check it on read, as the wrapper in this guide does. Use sessionStorage if data should only live as long as the tab."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is localStorage slow or blocking?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It's synchronous, so every read and write runs on the main thread. For small values that's negligible. It becomes a problem with large values or frequent writes, such as saving on every keystroke or render. Debounce writes, and move large or structured data to IndexedDB."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to store tokens in localStorage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Avoid it for sensitive tokens. Any script running on your page, including injected ones in an XSS attack, can read localStorage. Prefer HttpOnly, Secure cookies for session tokens, and keep localStorage for non-sensitive preferences."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I sync localStorage between tabs?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Listen for the storage event on window. It fires in every other tab of the same origin when a value changes, not in the tab that made the change, so each tab can update its UI when another tab writes."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">localStorage done right</span>
+          </nav>
+          <p class="eyebrow">Guide · Browser storage</p>
+          <h1>localStorage done right: a safe 30-line wrapper</h1>
+          <p class="cs-lead"><strong>localStorage</strong> is perfect for small things: a theme, a dismissed banner, a draft. It's also easy to misuse. Here's a tiny, dependency-free wrapper that adds <strong>expiration</strong>, <strong>versioning</strong>, <strong>quota handling</strong> and <strong>cross-tab sync</strong>, and the point where you should move to IndexedDB instead.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 6 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>When localStorage is the right tool</h2>
+          <ul class="cs-list">
+            <li><strong>Small, non-sensitive values:</strong> theme, language, layout preferences, dismissed notices.</li>
+            <li><strong>Read once at startup</strong> and written occasionally.</li>
+            <li><strong>Simple data</strong> that's easy to serialise as JSON.</li>
+          </ul>
+          <p>If you're storing lists of records, files, or anything you'd want to query, skip ahead to <a href="/guides/opfs-vs-indexeddb-benchmark/">IndexedDB and OPFS</a>.</p>
+        </section>
+
+        <section>
+          <h2>The pitfalls nobody handles</h2>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Pitfall</th><th>What happens</th><th>Fix</th></tr></thead>
+              <tbody>
+                <tr><td>Quota exceeded</td><td><code>setItem</code> throws</td><td>try/catch every write</td></tr>
+                <tr><td>Storage blocked</td><td>Access can throw (privacy settings, some embedded contexts)</td><td>Fall back to defaults</td></tr>
+                <tr><td>Strings only</td><td>Objects become <code>"[object Object]"</code></td><td>JSON with a safe parse</td></tr>
+                <tr><td>No expiry</td><td>Stale data lives forever</td><td>Store a timestamp</td></tr>
+                <tr><td>Shape changes</td><td>Old data breaks new code</td><td>Store a schema version</td></tr>
+                <tr><td>Synchronous</td><td>Large or frequent writes block the UI</td><td>Keep values small, debounce writes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>The wrapper</h2>
+          <p>No dependencies, and it never throws: a broken or blocked storage just falls back to the default value.</p>
+          <figure class="cs-code"><figcaption>JavaScript · store.js</figcaption><pre><code>const PREFIX = &quot;app:&quot;;
+const VERSION = 1; // bump when the shape of stored data changes
+
+export const store = {
+  get(key, fallback = null) {
+    try {
+      const raw = localStorage.getItem(PREFIX + key);
+      if (raw === null) return fallback;
+      const { v, exp, data } = JSON.parse(raw);
+      if (v !== VERSION || (exp &amp;&amp; Date.now() &gt; exp)) {
+        localStorage.removeItem(PREFIX + key); // outdated or expired
+        return fallback;
+      }
+      return data;
+    } catch {
+      return fallback; // blocked storage or corrupt JSON
+    }
+  },
+
+  set(key, data, { ttl = 0 } = {}) {
+    try {
+      const exp = ttl ? Date.now() + ttl : 0;
+      localStorage.setItem(PREFIX + key, JSON.stringify({ v: VERSION, exp, data }));
+      return true;
+    } catch {
+      return false; // QuotaExceededError or storage disabled
+    }
+  },
+
+  remove(key) {
+    try { localStorage.removeItem(PREFIX + key); } catch {}
+  },
+};</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript · usage</figcaption><pre><code>import { store } from &quot;./store.js&quot;;
+
+store.set(&quot;theme&quot;, &quot;dark&quot;);
+store.set(&quot;promo-dismissed&quot;, true, { ttl: 7 * 24 * 60 * 60 * 1000 }); // 7 days
+
+const theme = store.get(&quot;theme&quot;, &quot;light&quot;);</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>Sync across tabs</h2>
+          <p>When one tab writes, the browser fires a <code>storage</code> event in every <em>other</em> tab of the same site. That's all you need to keep open tabs consistent:</p>
+          <figure class="cs-code"><figcaption>JavaScript · cross-tab sync</figcaption><pre><code>window.addEventListener(&quot;storage&quot;, (event) =&gt; {
+  if (event.key !== &quot;app:theme&quot;) return;
+  const theme = store.get(&quot;theme&quot;, &quot;light&quot;);
+  document.documentElement.dataset.theme = theme;
+});</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>Don't write on every change</h2>
+          <p>Because localStorage is synchronous, saving a draft on every keystroke adds work to every keystroke. Debounce it:</p>
+          <figure class="cs-code"><figcaption>JavaScript · debounced save</figcaption><pre><code>let timer;
+editor.addEventListener(&quot;input&quot;, () =&gt; {
+  clearTimeout(timer);
+  timer = setTimeout(() =&gt; store.set(&quot;draft&quot;, editor.value), 400);
+});</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>When to move to IndexedDB</h2>
+          <ul class="cs-list">
+            <li>You're storing <strong>more than a few hundred kilobytes</strong>, or a growing list of records.</li>
+            <li>You need to <strong>query</strong> or filter data, not just read one key.</li>
+            <li>You store <strong>files, images or binary data</strong>.</li>
+            <li>You want to do the work <strong>in a Web Worker</strong>, where localStorage isn't available.</li>
+          </ul>
+          <p>That's where <strong>IndexedDB</strong> and <strong>OPFS</strong> come in. Compare them with a <a href="/guides/opfs-vs-indexeddb-benchmark/">benchmark you can run in your browser</a>.</p>
+        </section>
+
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>How much data can localStorage store?</summary>
+            <p>Around 5 MB per origin in most browsers, stored as UTF-16 strings, so the practical limit for your data is often lower. When you go over, setItem throws a QuotaExceededError, which is why every write should be wrapped in try/catch.</p>
+          </details>
+          <details>
+            <summary>Does localStorage expire?</summary>
+            <p>No. Data stays until your code or the user clears it. To expire values, store a timestamp next to the data and check it on read, as the wrapper in this guide does. Use sessionStorage if data should only live as long as the tab.</p>
+          </details>
+          <details>
+            <summary>Is localStorage slow or blocking?</summary>
+            <p>It's synchronous, so every read and write runs on the main thread. For small values that's negligible. It becomes a problem with large values or frequent writes, such as saving on every keystroke or render. Debounce writes, and move large or structured data to IndexedDB.</p>
+          </details>
+          <details>
+            <summary>Is it safe to store tokens in localStorage?</summary>
+            <p>Avoid it for sensitive tokens. Any script running on your page, including injected ones in an XSS attack, can read localStorage. Prefer HttpOnly, Secure cookies for session tokens, and keep localStorage for non-sensitive preferences.</p>
+          </details>
+          <details>
+            <summary>How do I sync localStorage between tabs?</summary>
+            <p>Listen for the storage event on window. It fires in every other tab of the same origin when a value changes, not in the tab that made the change, so each tab can update its UI when another tab writes.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Building a fast, offline-friendly web app?</h2>
+            <p>I build lean Vue 3 and vanilla JavaScript front-ends that load fast, work offline and store data the right way. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><strong>OPFS vs IndexedDB: a benchmark you can run yourself</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/mcp-server-nodejs-internal-tools/"><span class="rel-kicker">AI agents & MCP</span><strong>Build an MCP server in Node.js for internal tools</strong></a><a class="card rel-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><strong>Private AI translation with self-hosted LLMs</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>

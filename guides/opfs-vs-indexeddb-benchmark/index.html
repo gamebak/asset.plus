@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPFS vs IndexedDB: Performance Benchmark You Can Run Yourself</title>
+  <meta name="description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/opfs-vs-indexeddb-benchmark/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/opfs-vs-indexeddb-benchmark/">
+  <meta property="og:title" content="OPFS vs IndexedDB: a benchmark you can run yourself">
+  <meta property="og:description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <meta property="og:image" content="https://asset.plus/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="OPFS vs IndexedDB: a benchmark you can run yourself">
+  <meta name="twitter:description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <meta name="twitter:image" content="https://asset.plus/assets/og.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/#article",
+      "headline": "OPFS vs IndexedDB: a benchmark you can run yourself",
+      "description": "OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.",
+      "image": "https://asset.plus/assets/og.jpg",
+      "datePublished": "2026-11-22",
+      "dateModified": "2026-11-22",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/",
+      "about": [
+        "OPFS",
+        "Origin Private File System",
+        "IndexedDB",
+        "Web Workers",
+        "Browser storage",
+        "Performance benchmark",
+        "Offline-first"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "OPFS vs IndexedDB",
+          "item": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is OPFS faster than IndexedDB?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Often, for large binary or file-like data, especially through a Web Worker with a synchronous access handle. But results vary a lot by browser, device and access pattern. Run the benchmark on this page in the browsers your users actually use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When should I use IndexedDB instead of OPFS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use IndexedDB for structured records you need to look up, filter or index, such as offline app data, caches and queues. Use OPFS for files and large binary blobs you read and write as a whole or in chunks, like media, exports, or a WebAssembly database file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do OPFS and IndexedDB work in Web Workers?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Both are available in workers, which is where heavy work belongs so the UI stays responsive. OPFS's fastest API, createSyncAccessHandle, is only available inside dedicated Web Workers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much can I store in IndexedDB or OPFS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Both share the same per-origin quota, which depends on the browser and free disk space and is usually far larger than localStorage. Check the current estimate with navigator.storage.estimate(), and request persistence with navigator.storage.persist() if the data shouldn't be evicted."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this benchmark send my data anywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It generates dummy data, writes and reads it locally in your browser, then deletes it. Nothing leaves your device."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">OPFS vs IndexedDB</span>
+          </nav>
+          <p class="eyebrow">Guide · Browser storage</p>
+          <h1>OPFS vs IndexedDB: a benchmark you can run yourself</h1>
+          <p class="cs-lead">For heavy lifting in the browser, such as offline data, large datasets or files, you have two real options: <strong>IndexedDB</strong> and the <strong>Origin Private File System (OPFS)</strong>. Most published benchmarks come from vendors. This one runs <strong>in your browser, on your device</strong>, right on this page.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 7 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>Two very different tools</h2>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th></th><th>IndexedDB</th><th>OPFS</th></tr></thead>
+              <tbody>
+                <tr><td>Data model</td><td>Object store: records with keys and indexes</td><td>Files and folders, private to your site</td></tr>
+                <tr><td>Best for</td><td>Structured data you query</td><td>Large files and binary data</td></tr>
+                <tr><td>Querying</td><td>Keys, indexes, ranges</td><td>None. You read bytes.</td></tr>
+                <tr><td>Fastest API</td><td>Batched writes in one transaction</td><td>Sync access handle (worker only)</td></tr>
+                <tr><td>In Web Workers</td><td>Yes</td><td>Yes, required for sync access</td></tr>
+                <tr><td>Quota</td><td colspan="2">Shared per-origin quota, usually much larger than localStorage</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Coming from localStorage? Start with <a href="/guides/localstorage-done-right/">when localStorage is enough</a>.</p>
+        </section>
+
+        <section>
+          <h2>Run the benchmark</h2>
+          <p>It generates dummy records, writes and reads them with each API, and deletes everything afterwards. Nothing leaves your device.</p>
+          <div class="bench card">
+            <div class="bench-controls">
+              <label for="bench-size">Dataset</label>
+              <select id="bench-size">
+                <option value="1000x1024">1,000 × 1 KB (≈1 MB)</option>
+                <option value="5000x2048" selected>5,000 × 2 KB (≈10 MB)</option>
+                <option value="10000x5120">10,000 × 5 KB (≈50 MB)</option>
+              </select>
+              <button type="button" class="btn btn-primary btn-sm" id="bench-run">Run benchmark</button>
+            </div>
+            <div id="bench-out" class="bench-out" aria-live="polite"><p class="bench-meta">Results appear here. Try it in a few different browsers.</p></div>
+          </div>
+          <p>It's a fair-but-simple test: IndexedDB stores the data as individual records (how you'd use it), while OPFS stores the same data as one file (how you'd use <em>it</em>). Treat the numbers as a guide for your own case, not a universal ranking.</p>
+        </section>
+
+        <section>
+          <h2>Heavy lifting: move it to a Web Worker</h2>
+          <p>Whichever storage you pick, large reads, writes and processing belong off the main thread, so scrolling and typing stay smooth. A minimal IndexedDB setup inside a worker, with no library:</p>
+          <figure class="cs-code"><figcaption>JavaScript · storage.worker.js</figcaption><pre><code>const dbReady = new Promise((resolve, reject) =&gt; {
+  const req = indexedDB.open(&quot;app&quot;, 1);
+  req.onupgradeneeded = () =&gt; req.result.createObjectStore(&quot;items&quot;, { keyPath: &quot;id&quot; });
+  req.onsuccess = () =&gt; resolve(req.result);
+  req.onerror = () =&gt; reject(req.error);
+});
+
+onmessage = async ({ data: { type, items } }) =&gt; {
+  const db = await dbReady;
+  if (type === &quot;save&quot;) {
+    const tx = db.transaction(&quot;items&quot;, &quot;readwrite&quot;);
+    const store = tx.objectStore(&quot;items&quot;);
+    for (const item of items) store.put(item); // one transaction, many writes
+    tx.oncomplete = () =&gt; postMessage({ type: &quot;saved&quot;, count: items.length });
+  }
+};</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript · main thread</figcaption><pre><code>const worker = new Worker(&quot;/storage.worker.js&quot;);
+worker.onmessage = ({ data }) =&gt; console.log(`saved ${data.count} items`);
+worker.postMessage({ type: &quot;save&quot;, items: bigArrayOfRecords });</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>Practical rules</h2>
+          <ul class="cs-list">
+            <li><strong>Batch writes</strong> into one transaction. Many tiny transactions are the most common IndexedDB slowdown.</li>
+            <li><strong>Split big data into chunks</strong> instead of one giant record, so updates only rewrite what changed.</li>
+            <li><strong>Prefer ArrayBuffers</strong> for binary data in IndexedDB. Blob storage has had browser-specific problems, notably on older Safari versions.</li>
+            <li><strong>Ask for persistence</strong> with <code>navigator.storage.persist()</code> when losing the data would hurt.</li>
+            <li><strong>Test in every target browser.</strong> Storage performance differs more between browsers than almost anything else.</li>
+          </ul>
+        </section>
+
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>Is OPFS faster than IndexedDB?</summary>
+            <p>Often, for large binary or file-like data, especially through a Web Worker with a synchronous access handle. But results vary a lot by browser, device and access pattern. Run the benchmark on this page in the browsers your users actually use.</p>
+          </details>
+          <details>
+            <summary>When should I use IndexedDB instead of OPFS?</summary>
+            <p>Use IndexedDB for structured records you need to look up, filter or index, such as offline app data, caches and queues. Use OPFS for files and large binary blobs you read and write as a whole or in chunks, like media, exports, or a WebAssembly database file.</p>
+          </details>
+          <details>
+            <summary>Do OPFS and IndexedDB work in Web Workers?</summary>
+            <p>Yes. Both are available in workers, which is where heavy work belongs so the UI stays responsive. OPFS's fastest API, createSyncAccessHandle, is only available inside dedicated Web Workers.</p>
+          </details>
+          <details>
+            <summary>How much can I store in IndexedDB or OPFS?</summary>
+            <p>Both share the same per-origin quota, which depends on the browser and free disk space and is usually far larger than localStorage. Check the current estimate with navigator.storage.estimate(), and request persistence with navigator.storage.persist() if the data shouldn't be evicted.</p>
+          </details>
+          <details>
+            <summary>Does this benchmark send my data anywhere?</summary>
+            <p>No. It generates dummy data, writes and reads it locally in your browser, then deletes it. Nothing leaves your device.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Need heavy data handling in the browser?</h2>
+            <p>I build offline-first and data-heavy web apps with IndexedDB, OPFS and Web Workers, fast and without bloated libraries. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/aws-lambda-cost-optimization-rust-arm64/"><span class="rel-kicker">Serverless & AWS</span><strong>AWS Lambda cost optimization: Node.js, Rust and arm64</strong></a><a class="card rel-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><strong>Private AI translation with self-hosted LLMs</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+  <script>
+
+(() => {
+  const btn = document.getElementById('bench-run');
+  const out = document.getElementById('bench-out');
+  const sizeSel = document.getElementById('bench-size');
+  if (!btn) return;
+
+  const fmt = ms => ms < 10 ? ms.toFixed(2) + ' ms' : Math.round(ms) + ' ms';
+  const row = (name, write, read, note = '') =>
+    `<tr><td>${name}</td><td>${write}</td><td>${read}</td><td>${note}</td></tr>`;
+
+  function makeRecords(count, bytes) {
+    const payload = 'x'.repeat(bytes);
+    return Array.from({ length: count }, (_, i) => ({ id: i, payload }));
+  }
+
+  // ── IndexedDB: N records in one transaction, then getAll ──
+  function idbOpen() {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open('asset-plus-bench', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('items', { keyPath: 'id' });
+      req.onsuccess = () => res(req.result);
+      req.onerror = () => rej(req.error);
+    });
+  }
+  const done = tx => new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = tx.onabort = () => rej(tx.error); });
+
+  async function benchIDB(records) {
+    const db = await idbOpen();
+    let tx = db.transaction('items', 'readwrite');
+    tx.objectStore('items').clear();
+    await done(tx);
+    const t0 = performance.now();
+    tx = db.transaction('items', 'readwrite');
+    const st = tx.objectStore('items');
+    for (const r of records) st.put(r);
+    await done(tx);
+    const t1 = performance.now();
+    const all = await new Promise((res, rej) => {
+      const req = db.transaction('items').objectStore('items').getAll();
+      req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
+    });
+    const t2 = performance.now();
+    db.close();
+    await new Promise(r => { const d = indexedDB.deleteDatabase('asset-plus-bench'); d.onsuccess = d.onerror = d.onblocked = r; });
+    if (all.length !== records.length) throw new Error('read mismatch');
+    return [t1 - t0, t2 - t1];
+  }
+
+  // ── OPFS (main thread): one file via createWritable, read via getFile ──
+  async function benchOPFS(text) {
+    const root = await navigator.storage.getDirectory();
+    const fh = await root.getFileHandle('asset-plus-bench.txt', { create: true });
+    const t0 = performance.now();
+    const w = await fh.createWritable();
+    await w.write(text);
+    await w.close();
+    const t1 = performance.now();
+    const back = await (await fh.getFile()).text();
+    const t2 = performance.now();
+    await root.removeEntry('asset-plus-bench.txt');
+    if (back.length !== text.length) throw new Error('read mismatch');
+    return [t1 - t0, t2 - t1];
+  }
+
+  // ── OPFS (worker): synchronous access handle, the fastest path ──
+  function benchOPFSWorker(text) {
+    const src = `
+      onmessage = async (e) => {
+        try {
+          const root = await navigator.storage.getDirectory();
+          const fh = await root.getFileHandle('asset-plus-bench-w.bin', { create: true });
+          const h = await fh.createSyncAccessHandle();
+          const bytes = new TextEncoder().encode(e.data);
+          const t0 = performance.now();
+          h.truncate(0); h.write(bytes, { at: 0 }); h.flush();
+          const t1 = performance.now();
+          const buf = new Uint8Array(h.getSize()); h.read(buf, { at: 0 });
+          const t2 = performance.now();
+          h.close(); await root.removeEntry('asset-plus-bench-w.bin');
+          postMessage({ ok: buf.length === bytes.length, w: t1 - t0, r: t2 - t1 });
+        } catch (err) { postMessage({ error: String(err) }); }
+      };`;
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+      const wk = new Worker(url);
+      const timer = setTimeout(() => { wk.terminate(); rej(new Error('timeout')); }, 20000);
+      wk.onmessage = ({ data }) => {
+        clearTimeout(timer); wk.terminate(); URL.revokeObjectURL(url);
+        data.error ? rej(new Error(data.error)) : res([data.w, data.r]);
+      };
+      wk.onerror = (e) => { clearTimeout(timer); wk.terminate(); rej(new Error(e.message || 'worker error')); };
+      wk.postMessage(text);
+    });
+  }
+
+  btn.addEventListener('click', async () => {
+    const [count, bytes] = sizeSel.value.split('x').map(Number);
+    const records = makeRecords(count, bytes);
+    const text = JSON.stringify(records);
+    const mb = (text.length / 1048576).toFixed(1);
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+    let rows = '';
+    const run = async (name, fn, note) => {
+      try { const [w, r] = await fn(); rows += row(name, fmt(w), fmt(r), note); }
+      catch (e) { rows += row(name, '—', '—', 'Not supported here'); }
+      out.innerHTML = `<p class="bench-meta">${count.toLocaleString()} records × ${bytes.toLocaleString()} bytes ≈ ${mb} MB · ${navigator.userAgent.match(/(Firefox|Edg|Chrome|Safari)\/[\d.]+/)?.[0] ?? 'your browser'}</p>
+        <div class="cs-table-wrap"><table class="cs-table"><thead><tr><th>Storage</th><th>Write</th><th>Read</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    };
+    await run('IndexedDB', () => benchIDB(records), 'records, one transaction');
+    await run('OPFS · main thread', () => benchOPFS(text), 'one file, async API');
+    await run('OPFS · Web Worker', () => benchOPFSWorker(text), 'sync access handle');
+    btn.disabled = false;
+    btn.textContent = 'Run again';
+  });
+})();
+
+  </script>
+</body>
+
+</html>
