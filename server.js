@@ -18,7 +18,7 @@ const mime = {
 
 http.createServer((req, res) => {
   let url = decodeURIComponent(req.url.split('?')[0]);
-  if (url === '/dao' || url === '/retro') { // redirect so relative asset paths resolve
+  if (url === '/dao') { // redirect so relative asset paths resolve
     res.writeHead(301, { Location: url + '/' });
     return res.end();
   }

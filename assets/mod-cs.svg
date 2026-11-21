@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" role="img" aria-label="Illustration: sniper scope view over a desert courtyard">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6d7a0"/>
+      <stop offset="1" stop-color="#eab06a"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="100" fill="url(#sky)"/>
+  <!-- far wall -->
+  <rect x="0" y="50" width="160" height="50" fill="#d39a5c"/>
+  <rect x="0" y="50" width="160" height="3" fill="#e2b07a"/>
+  <!-- archway building -->
+  <rect x="92" y="22" width="68" height="78" fill="#ddaa6c"/>
+  <rect x="92" y="22" width="68" height="4" fill="#ecc28c"/>
+  <path d="M98 84V60a12 12 0 0 1 24 0v24z" fill="#5e3f24"/>
+  <path d="M98 84V60a12 12 0 0 1 24 0v3a12 12 0 0 0-24 0v21z" fill="#4a3019"/>
+  <!-- crates -->
+  <g stroke="#5f3c1b" stroke-width="1.5">
+    <rect x="58" y="60" width="24" height="24" fill="#9a6532"/>
+    <path d="M58 60l24 24M82 60L58 84"/>
+    <rect x="62" y="42" width="18" height="18" fill="#a8703a"/>
+    <path d="M62 42l18 18M80 42L62 60"/>
+  </g>
+  <!-- ground -->
+  <rect x="0" y="84" width="160" height="16" fill="#b88049"/>
+  <rect x="0" y="84" width="160" height="2" fill="#a26f3d"/>
+  <!-- scope -->
+  <path fill-rule="evenodd" fill="#07090c" opacity="0.72" d="M0 0h160v100H0z M90 12a38 38 0 1 0 0.01 0z"/>
+  <circle cx="90" cy="50" r="38" fill="none" stroke="#07090c" stroke-width="2.5"/>
+  <g stroke="#07090c">
+    <path d="M90 12v76M52 50h76" stroke-width="0.8"/>
+    <path d="M90 12v22M90 66v22M52 50h22M106 50h22" stroke-width="2.2"/>
+  </g>
+</svg>

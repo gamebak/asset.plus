@@ -1,15 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#0f1923"/>
-  <!-- corner brackets (orange, mirrors avatar frame style) -->
-  <rect x="2" y="2" width="6" height="2" fill="#ff6600"/>
-  <rect x="2" y="2" width="2" height="6" fill="#ff6600"/>
-  <rect x="24" y="2" width="6" height="2" fill="#ff6600"/>
-  <rect x="28" y="2" width="2" height="6" fill="#ff6600"/>
-  <rect x="2" y="28" width="6" height="2" fill="#ff6600"/>
-  <rect x="2" y="24" width="2" height="6" fill="#ff6600"/>
-  <rect x="24" y="28" width="6" height="2" fill="#ff6600"/>
-  <rect x="28" y="24" width="2" height="6" fill="#ff6600"/>
-  <!-- + symbol (cyan) representing .plus -->
-  <rect x="14" y="8" width="4" height="16" fill="#00ccff"/>
-  <rect x="8" y="14" width="16" height="4" fill="#00ccff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16202b"/>
+      <stop offset="1" stop-color="#0b0f14"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#g)"/>
+  <path fill="#eef2f6" fill-rule="evenodd" d="M11 52 26 13h8l15 39h-8.6l-3.3-9H22.9l-3.3 9zM25.4 36h9.2L30 23.4z"/>
+  <path fill="#5cc8ff" d="M48.5 7h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/>
 </svg>

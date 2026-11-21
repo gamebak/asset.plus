@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" role="img" aria-label="Illustration: a 5.25 inch floppy disk">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#40318d"/>
+      <stop offset="1" stop-color="#2b2163"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="100" fill="url(#bg)"/>
+  <g transform="rotate(-8 80 50)">
+    <rect x="42" y="12" width="76" height="76" rx="3" fill="#1b1b1f"/>
+    <rect x="42" y="12" width="76" height="76" rx="3" fill="none" stroke="#3a3a42" stroke-width="1"/>
+    <!-- label -->
+    <rect x="48" y="16" width="44" height="16" rx="1" fill="#f1ecdf"/>
+    <path d="M51 22h30M51 27h22" stroke="#7c70da" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- write-protect notch -->
+    <rect x="114" y="22" width="4" height="7" fill="#2b2163"/>
+    <!-- hub -->
+    <circle cx="80" cy="52" r="11" fill="#6a6a72"/>
+    <circle cx="80" cy="52" r="6" fill="#2b2163"/>
+    <!-- index hole -->
+    <circle cx="94" cy="54" r="1.6" fill="#6a6a72"/>
+    <!-- read window -->
+    <rect x="76" y="68" width="8" height="18" rx="4" fill="#6a6a72"/>
+  </g>
+  <text x="8" y="94" font-family="Menlo, monospace" font-size="7" fill="#a59fff">LOAD"*",8,1</text>
+</svg>

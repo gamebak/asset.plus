@@ -57,9 +57,76 @@ document.documentElement.classList.add('js');
 // ── Footer year ──────────────────────────────────────────────────
 document.getElementById('footer-year').textContent = new Date().getFullYear();
 
-// ── Easter egg: press R for retro mode ───────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key.toLowerCase() !== 'r' || e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.target.closest('input, textarea, select, [contenteditable]')) return;
-  window.location.href = 'retro/';
-});
+// ── C64 screen: loading from floppy (and failing, the first time) ─
+(() => {
+  const screen = document.getElementById('c64-screen');
+  if (!screen) return;
+  const ROWS = 8;
+  const MSG = 'LESS CODE = MORE';
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  let lines = ['READY.', ''];
+
+  const render = () => {
+    screen.textContent = lines.slice(-ROWS).join('\n');
+    screen.append(cursor);
+  };
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const type = async text => {
+    for (const ch of text) {
+      lines[lines.length - 1] += ch;
+      render();
+      await wait(60 + Math.random() * 70);
+    }
+    await wait(300);
+  };
+  const print = async (text, pause) => {
+    lines.splice(lines.length - 1, 0, text); // insert above the input line
+    render();
+    await wait(pause);
+  };
+  const enter = () => { lines.push(''); render(); };
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    lines = ['LOAD"*",8,1', '', 'SEARCHING FOR *', 'LOADING', '?LOAD  ERROR', 'READY.', 'LOAD"*",8,1', ''];
+    render();
+    return;
+  }
+
+  let visible = false;
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(screen);
+  const whenVisible = async () => { while (!visible || document.hidden) await wait(400); };
+
+  (async function loop() {
+    for (;;) {
+      lines = ['READY.', ''];
+      render();
+      await whenVisible();
+      await wait(900);
+
+      // attempt #1 — the classic
+      await type('LOAD"*",8,1');
+      enter();
+      await print('', 200);
+      await print('SEARCHING FOR *', 1800);
+      await print('LOADING', 3200);
+      await print('?LOAD  ERROR', 300);
+      await print('READY.', 1400);
+
+      // attempt #2 — works, eventually
+      await type('LOAD"*",8,1');
+      enter();
+      await print('', 200);
+      await print('SEARCHING FOR *', 1800);
+      await print('LOADING', 4200);
+      await print('READY.', 700);
+      await type('RUN');
+      enter();
+      lines.pop();
+      for (let i = 0; i < 10; i++) { lines.push(MSG); render(); await wait(120); }
+      lines.push('');
+      render();
+      await wait(5000);
+    }
+  })();
+})();
