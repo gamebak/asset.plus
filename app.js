@@ -1,4 +1,40 @@
-document.documentElement.classList.add('js');
+// ── Hero photo: "print" it in, line by line ───────────────────────
+(() => {
+  const frame = document.getElementById('photo-frame');
+  if (!frame || frame.classList.contains('printed')) return;
+  const img = frame.querySelector('img');
+  const status = document.getElementById('photo-status');
+  const DURATION = 2200, LINES = 44;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    frame.classList.add('printed');
+    return;
+  }
+
+  const start = () => {
+    if (frame.classList.contains('printed')) return;
+    frame.classList.add('printing');
+    status.classList.add('show');
+    const t0 = performance.now();
+    const tick = now => {
+      const step = Math.min(LINES, Math.floor((now - t0) / DURATION * LINES));
+      status.textContent = 'PRINTING ' + Math.round(step / LINES * 100) + '%';
+      if (step < LINES) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    img.addEventListener('animationend', () => {
+      status.textContent = 'READY.';
+      frame.classList.replace('printing', 'printed');
+      setTimeout(() => status.classList.remove('show'), 1400);
+    }, { once: true });
+  };
+
+  if (img.complete && img.naturalWidth) start();
+  else {
+    img.addEventListener('load', start, { once: true });
+    img.addEventListener('error', () => frame.classList.add('printed'), { once: true });
+  }
+})();
 
 // ── Theme toggle ─────────────────────────────────────────────────
 (() => {

@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Freelance Full-Stack Developer — Node.js, Vue, AWS | Asset.plus</title>
-  <meta name="description" content="Freelance full-stack developer, 15+ years: Node.js, Vue/Nuxt, React, AWS and AI integrations. Fast, secure, lean software by Alexandru Cobuz.">
+  <title>Senior Full-Stack Engineer — Node.js, Vue 3, AWS | Asset.plus</title>
+  <meta name="description" content="Senior full-stack engineer &amp; tech lead, 15+ years: Node.js, Vue 3, Nuxt, AWS and AI agents with Claude. Freelance &amp; contract, remote (EU/CET).">
   <meta name="author" content="Alexandru Cobuz">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://asset.plus/">
@@ -16,16 +16,16 @@
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://asset.plus/">
-  <meta property="og:title" content="Alexandru Cobuz — Freelance Full-Stack Developer | Asset.plus">
+  <meta property="og:title" content="Alexandru Cobuz — Senior Full-Stack Engineer &amp; Tech Lead | Asset.plus">
   <meta property="og:site_name" content="Asset.plus">
-  <meta property="og:description" content="Fast, secure and lean web &amp; software development by Alexandru Cobuz. 15+ years, from first prototype to production.">
+  <meta property="og:description" content="15+ years building fast, secure, lean software: Node.js, Vue 3, AWS and AI agents. Freelance &amp; contract, remote (EU/CET).">
   <meta property="og:image" content="https://asset.plus/assets/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@CobuzAlexandru">
-  <meta name="twitter:title" content="Alexandru Cobuz — Freelance Full-Stack Developer | Asset.plus">
-  <meta name="twitter:description" content="Fast, secure and lean web &amp; software development by Alexandru Cobuz.">
+  <meta name="twitter:title" content="Alexandru Cobuz — Senior Full-Stack Engineer &amp; Tech Lead | Asset.plus">
+  <meta name="twitter:description" content="Senior full-stack engineer &amp; tech lead. Node.js, Vue 3, AWS and AI agents. Remote (EU/CET).">
   <meta name="twitter:image" content="https://asset.plus/assets/og.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,8 +44,8 @@
       "name": "Alexandru Cobuz",
       "url": "https://asset.plus/",
       "image": "https://asset.plus/assets/alexandru.jpg",
-      "jobTitle": "Freelance Full-Stack Developer",
-      "description": "Freelance full-stack developer, 15+ years: Node.js, Vue/Nuxt, React, AWS and AI integrations. Fast, secure, lean software by Alexandru Cobuz.",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "description": "Senior full-stack engineer & tech lead, 15+ years: Node.js, Vue 3, Nuxt, AWS and AI agents with Claude. Freelance & contract, remote (EU/CET).",
       "sameAs": [
         "https://www.linkedin.com/in/alexandru-cobuz/",
         "https://x.com/CobuzAlexandru",
@@ -54,30 +54,49 @@
       "knowsAbout": [
         "Full-stack development",
         "JavaScript",
-        "TypeScript",
         "Node.js",
-        "Vue.js",
+        "Bun",
+        "Vue 3",
         "Nuxt",
         "React",
         "GraphQL",
         "Apollo",
+        "REST APIs",
+        "WebSockets",
         "MongoDB",
         "Redis",
+        "MS SQL",
         "AWS Lambda",
         "AWS EC2",
         "Serverless",
+        "Microservices",
+        "Event-driven architecture",
         "Docker",
+        "CI/CD",
         "Rust",
         "PHP",
         "Symfony",
-        "Local LLMs",
+        "AI agents",
+        "Claude",
+        "LLM integration",
+        "Generative AI",
         "Ollama",
-        "AI integration",
+        "Self-hosted LLMs",
+        "Machine translation",
+        "Algorithmic trading",
+        "FinTech",
+        "E-commerce",
+        "Engineering management",
+        "Technical leadership",
         "Web performance",
-        "Web scraping",
-        "Trading bots",
-        "Application security"
-      ]
+        "Monitoring and observability",
+        "Application security",
+        "Web scraping"
+      ],
+      "workLocation": {
+        "@type": "Place",
+        "name": "Remote (EU, CET)"
+      }
     },
     {
       "@type": "ProfessionalService",
@@ -86,19 +105,23 @@
       "url": "https://asset.plus/",
       "logo": "https://asset.plus/assets/apple-touch-icon.png",
       "image": "https://asset.plus/assets/og.jpg",
-      "description": "Freelance web & software development: full-stack web apps, MVPs and SaaS, AI integrations, performance and architecture reviews.",
+      "description": "Freelance & contract web and software engineering: full-stack web apps, MVPs and SaaS, AI agents and integrations, performance and architecture reviews.",
       "founder": {
         "@id": "https://asset.plus/#person"
       },
-      "areaServed": "Worldwide",
+      "areaServed": [
+        "Europe",
+        "Worldwide"
+      ],
       "serviceType": [
         "Full-stack web development",
         "MVP & SaaS development",
-        "AI integration",
+        "AI agents & LLM integration",
         "Performance & architecture review",
         "Node.js development",
-        "Vue / Nuxt development",
-        "AWS serverless development"
+        "Vue 3 / Nuxt development",
+        "AWS serverless development",
+        "Technical leadership"
       ]
     },
     {
@@ -114,6 +137,13 @@
 }
   </script>
   <script>
+    // Mark JS as available before first paint (enables the photo "print" effect),
+    // with a safety net that reveals the photo if app.js never runs.
+    document.documentElement.classList.add('js');
+    setTimeout(function () {
+      var f = document.getElementById('photo-frame');
+      if (f && !f.classList.contains('printing')) f.classList.add('printed');
+    }, 3000);
     // Apply saved theme before first paint to avoid a flash.
     try {
       var t = localStorage.getItem('theme');
@@ -165,7 +195,7 @@
           <p class="badge"><span class="pulse" aria-hidden="true"></span>Open to new collaborations · Q2 2027</p>
           <p class="hero-kicker">Independent web &amp; software development, from first prototype to production.</p>
           <h1>Alexandru Cobuz</h1>
-          <p class="hero-role">Freelance full-stack developer · 15+ years</p>
+          <p class="hero-role"><span>Senior full-stack engineer</span> · <span>Freelance &amp; contract</span> · <span>15+ years</span></p>
           <p class="hero-lead">
             I build fast, lean software with no unnecessary baggage —
             from the first pixel to the last Lambda.
@@ -179,10 +209,25 @@
         <figure class="hero-photo">
           <span class="px-corner tl" aria-hidden="true"></span><span class="px-corner tr" aria-hidden="true"></span>
           <span class="px-corner bl" aria-hidden="true"></span><span class="px-corner br" aria-hidden="true"></span>
-          <picture>
-            <source srcset="assets/alexandru.webp" type="image/webp">
-            <img src="assets/alexandru.jpg" alt="Alexandru Cobuz, freelance full-stack developer" width="400" height="400" loading="eager" fetchpriority="high">
-          </picture>
+          <div class="photo-frame" id="photo-frame">
+            <picture>
+              <source srcset="assets/alexandru.webp" type="image/webp">
+              <img src="assets/alexandru.jpg" alt="Alexandru Cobuz, senior full-stack engineer" width="400" height="400" loading="eager" fetchpriority="high">
+            </picture>
+            <span class="photo-scanlines" aria-hidden="true"></span>
+            <span class="photo-head" aria-hidden="true"></span>
+            <span class="photo-status" id="photo-status" aria-hidden="true">PRINTING 0%</span>
+          </div>
+          <!-- CRT colour fringing: red shifted left, cyan shifted right, recombined -->
+          <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+            <filter id="rgb-split" color-interpolation-filters="sRGB">
+              <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red" />
+              <feOffset in="red" dx="-2" result="redShift" />
+              <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cyan" />
+              <feOffset in="cyan" dx="2" result="cyanShift" />
+              <feBlend in="redShift" in2="cyanShift" mode="screen" />
+            </filter>
+          </svg>
         </figure>
       </div>
     </section>
@@ -289,8 +334,8 @@
             <p>Taking an idea to a working web app or SaaS quickly, on a foundation that won't need rewriting once it succeeds.</p>
           </article>
           <article class="card reveal">
-            <h3>AI integrations</h3>
-            <p>Practical AI features (translation, summarisation, internal assistants) built into your product, with local models like Ollama when your data has to stay private.</p>
+            <h3>AI agents &amp; integrations</h3>
+            <p>AI agents and practical LLM features (translation, summarisation, internal assistants, workflow automation) built on Claude, or on self-hosted models like Ollama when your data has to stay private.</p>
           </article>
         </div>
       </div>
@@ -307,25 +352,25 @@
           <div class="stack-group reveal">
             <h3>Frontend</h3>
             <ul class="chips">
-              <li>Vanilla JS</li><li>TypeScript</li><li>Vue</li><li>Nuxt</li><li>React</li><li>CSS</li><li>WebGL</li>
+              <li>Vanilla JS</li><li>Vue 3</li><li>Nuxt</li><li>React</li><li>CSS</li><li>WebGL</li>
             </ul>
           </div>
           <div class="stack-group reveal">
             <h3>Backend</h3>
             <ul class="chips">
-              <li>Node.js</li><li>Rust</li><li>Express</li><li>GraphQL</li><li>Apollo</li><li>REST</li><li>WebSockets</li><li>PHP</li><li>Symfony</li>
+              <li>Node.js</li><li>Bun</li><li>Rust</li><li>Express</li><li>GraphQL</li><li>Apollo</li><li>REST</li><li>WebSockets</li><li>PHP</li><li>Symfony</li>
             </ul>
           </div>
           <div class="stack-group reveal">
             <h3>Data &amp; infrastructure</h3>
             <ul class="chips">
-              <li>MongoDB</li><li>Redis</li><li>MS SQL</li><li>AWS</li><li>Lambda</li><li>EC2</li><li>S3</li><li>Docker</li><li>CI/CD</li>
+              <li>MongoDB</li><li>Redis</li><li>MS SQL</li><li>AWS</li><li>Lambda</li><li>EC2</li><li>S3</li><li>Serverless</li><li>Docker</li><li>CI/CD</li>
             </ul>
           </div>
           <div class="stack-group reveal">
             <h3>AI &amp; automation</h3>
             <ul class="chips">
-              <li>Ollama</li><li>Local LLMs</li><li>AI translation</li><li>Web scraping</li><li>Trading bots</li>
+              <li>Claude</li><li>AI agents</li><li>LLM integration</li><li>Ollama</li><li>Self-hosted LLMs</li><li>Web scraping</li><li>Trading bots</li>
             </ul>
           </div>
         </div>
@@ -338,45 +383,39 @@
         <header class="section-head reveal">
           <p class="eyebrow">Experience</p>
           <h2>Where I've shipped.</h2>
-          <p class="section-sub">From e-commerce at scale to tools for the European Commission: 15+ years of building, leading and founding.</p>
+          <p class="section-sub">From Romania's largest e-commerce platform to GenAI tools for the European Commission: 15+ years of engineering, leading teams and founding.</p>
         </header>
         <ol class="xp">
           <li class="xp-item reveal">
             <p class="xp-when">2022 — now</p>
             <div>
-              <h3>European Commission <span class="xp-role">Full-stack Developer · Contract</span></h3>
-              <p>Internal tools for the EU institutions, including AI-powered translation running on local LLMs (Ollama). Node.js, Vue, Nuxt, MongoDB, AWS Lambda &amp; EC2.</p>
+              <h3>European Commission <span class="xp-role">Senior Full-Stack Engineer · Contract</span></h3>
+              <p>Internal tools for the EU institutions (public sector), including GenAI machine translation on self-hosted LLMs (Ollama). Node.js, Vue 3, Nuxt, MongoDB, AWS Lambda &amp; EC2.</p>
             </div>
           </li>
           <li class="xp-item reveal">
-            <p class="xp-when">2020 — now</p>
+            <p class="xp-when">2020 — 2025</p>
             <div>
-              <h3>Asset Plus Capital <span class="xp-role">Founder</span></h3>
-              <p>Quantitative research and high-frequency trading bots for crypto and stock arbitrage (CEX ↔ CEX, CEX ↔ DEX), with over $10M in traded volume.</p>
+              <h3>Quantitative trading systems <span class="xp-role">Founder · FinTech</span></h3>
+              <p>Algorithmic trading: quantitative research and high-frequency trading bots for cross-market arbitrage, built as real-time, low-latency systems.</p>
             </div>
           </li>
           <li class="xp-item reveal">
             <p class="xp-when">2018 — 2020</p>
             <div>
               <h3>Clevertech <span class="xp-role">Tech Lead JavaScript · Remote</span></h3>
-              <p>Scaled an event-tracking system to millions of events per month with Node.js, GraphQL, Apollo and React.</p>
+              <p>Led development of an event-driven, high-throughput tracking platform, scaled to millions of events per month with Node.js, GraphQL, Apollo and React.</p>
             </div>
           </li>
           <li class="xp-item reveal">
             <p class="xp-when">2015 — 2018</p>
             <div>
-              <h3>eMAG <span class="xp-role">Team Manager · Senior PHP Developer</span></h3>
-              <p>Led three teams in internal apps and built a monitoring platform from scratch for systems across several countries (Symfony, React, MS SQL).</p>
-            </div>
-          </li>
-          <li class="xp-item reveal">
-            <p class="xp-when">2014 — 2016</p>
-            <div>
-              <h3>Skyul.com <span class="xp-role">Founder</span></h3>
-              <p>A web scraping platform that found and ranked fast public proxies across the web.</p>
+              <h3>eMAG <span class="xp-role">Engineering Manager · Senior PHP Developer</span></h3>
+              <p>At Romania's largest e-commerce platform: managed 3 teams (16 engineers) building internal apps, and built a monitoring and observability platform from scratch for systems across several countries (Symfony, React, MS SQL).</p>
             </div>
           </li>
         </ol>
+        <p class="xp-more reveal">…and many other projects along the way.</p>
       </div>
     </section>
 
@@ -386,7 +425,7 @@
         <header class="section-head reveal">
           <p class="eyebrow">Contact</p>
           <h2>Let's build something lean.</h2>
-          <p class="section-sub">Fullstack · Remote friendly · Taking on new collaborations from Q2 2027. The fastest way to reach me is a message on any of these:</p>
+          <p class="section-sub">Senior full-stack · Freelance &amp; contract · Remote, EU (CET) · Taking on new collaborations from Q2 2027. The fastest way to reach me is a message on any of these:</p>
         </header>
         <div class="grid-3">
           <a class="card social-card reveal" href="https://www.linkedin.com/in/alexandru-cobuz/" target="_blank" rel="nofollow noopener">
