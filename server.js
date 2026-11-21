@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3030;
+const PORT = 9000;
 const DIR = __dirname;
 
 const mime = {
@@ -11,12 +11,18 @@ const mime = {
   '.js': 'text/javascript',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
 };
 
 http.createServer((req, res) => {
-  const url = req.url === '/' ? '/index.html' : req.url;
+  let url = decodeURIComponent(req.url.split('?')[0]);
+  if (url === '/dao' || url === '/retro') { // redirect so relative asset paths resolve
+    res.writeHead(301, { Location: url + '/' });
+    return res.end();
+  }
+  if (url.endsWith('/')) url += 'index.html'; // mirror GitHub Pages directory index
   const file = path.join(DIR, url);
 
   fs.readFile(file, (err, data) => {
