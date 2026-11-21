@@ -4,4 +4,32 @@
     <loc>https://asset.plus/</loc>
     <lastmod>2026-11-21</lastmod>
   </url>
+  <url>
+    <loc>https://asset.plus/work/private-ai-self-hosted-llm/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/mcp-server-nodejs-internal-tools/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/reduce-npm-dependencies/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/aws-lambda-cost-optimization-rust-arm64/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/bun-vs-nodejs-production/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/trading-bot-architecture-testing/</loc>
+    <lastmod>2026-11-22</lastmod>
+  </url>
 </urlset>

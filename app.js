@@ -59,7 +59,9 @@
 
 // ── Active nav link ──────────────────────────────────────────────
 (() => {
-  const links = [...document.querySelectorAll('.nav a')];
+  // only same-page section links (e.g. "#services"), not "/guides/" or links to other pages
+  const links = [...document.querySelectorAll('.nav a')]
+    .filter(l => l.hash && l.pathname === location.pathname);
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
       const link = links.find(l => l.hash === '#' + e.target.id);

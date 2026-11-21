@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build an MCP Server in Node.js for Internal Tools (Claude &amp; Ollama)</title>
+  <meta name="description" content="How to build a secure MCP server in Node.js that connects Claude or a self-hosted LLM (Ollama, llama.cpp) to your internal tools, APIs and data.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/mcp-server-nodejs-internal-tools/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/mcp-server-nodejs-internal-tools/">
+  <meta property="og:title" content="Build an MCP server in Node.js for internal tools">
+  <meta property="og:description" content="How to build a secure MCP server in Node.js that connects Claude or a self-hosted LLM (Ollama, llama.cpp) to your internal tools, APIs and data.">
+  <meta property="og:image" content="https://asset.plus/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="Build an MCP server in Node.js for internal tools">
+  <meta name="twitter:description" content="How to build a secure MCP server in Node.js that connects Claude or a self-hosted LLM (Ollama, llama.cpp) to your internal tools, APIs and data.">
+  <meta name="twitter:image" content="https://asset.plus/assets/og.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://asset.plus/guides/mcp-server-nodejs-internal-tools/#article",
+      "headline": "Build an MCP server in Node.js for your internal tools",
+      "description": "How to build a secure MCP server in Node.js that connects Claude or a self-hosted LLM (Ollama, llama.cpp) to your internal tools, APIs and data.",
+      "image": "https://asset.plus/assets/og.jpg",
+      "datePublished": "2026-11-22",
+      "dateModified": "2026-11-22",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/mcp-server-nodejs-internal-tools/",
+      "about": [
+        "Model Context Protocol",
+        "MCP server",
+        "Node.js",
+        "Claude",
+        "AI agents",
+        "Ollama",
+        "llama.cpp",
+        "Internal tools"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "MCP server in Node.js",
+          "item": "https://asset.plus/guides/mcp-server-nodejs-internal-tools/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is an MCP server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An MCP server exposes tools (actions), resources (data) and prompts to AI applications through the open Model Context Protocol. Any MCP-compatible client, such as Claude Desktop, Claude Code or your own agent, can discover and call them without custom integration code for each one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I use stdio or HTTP transport?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use stdio when the server runs on the same machine as a single user's AI client, for example a developer tool. Use the HTTP transport when the server is shared by a team or runs next to your internal systems, and put authentication in front of it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use MCP with Ollama or llama.cpp?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The MCP server doesn't care which model calls it. With a self-hosted model that supports tool calling, your own agent loop (or an MCP-capable client) passes the tool definitions to the model and executes the calls it makes, so sensitive data never leaves your infrastructure."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to give an AI agent access to internal systems?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is when access is designed like any other integration: least-privilege tools, read-only by default, validated inputs, per-user authentication, audit logs, and human confirmation for anything destructive. Never expose a raw SQL or shell tool."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">MCP server in Node.js</span>
+          </nav>
+          <p class="eyebrow">Guide · AI agents & MCP</p>
+          <h1>Build an MCP server in Node.js for your internal tools</h1>
+          <p class="cs-lead">The Model Context Protocol (MCP) lets AI assistants like <strong>Claude</strong> use your company's tools and data through one standard interface. Here's how I build MCP servers in <strong>Node.js</strong> that stay small, secure, and work with self-hosted models too.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 7 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>Why MCP for internal tools</h2>
+          <p>Every company has the same problem: useful data and actions are spread across an admin panel, a CRM, a database and a few internal APIs. Wiring each of them into each AI tool doesn't scale. <strong>MCP</strong> solves that with one server per system that any MCP-compatible client can use.</p>
+          <p>Build the integration once, and it works in Claude Desktop, Claude Code, and the agents you build yourself, including ones running on <strong>self-hosted models</strong>.</p>
+        </section>
+
+        <section>
+          <h2>Architecture</h2>
+          <figure class="cs-diagram"><svg viewBox="0 0 720 220" role="img" aria-labelledby="mcp-t mcp-d"><title id="mcp-t">MCP server architecture</title><desc id="mcp-d">An AI client such as Claude or an agent on Ollama connects to a Node.js MCP server, which calls internal APIs and databases with least-privilege access.</desc><rect class="d-zone" x="147" y="44" width="571" height="148" rx="14" /><text class="d-zone-label" x="161" y="66">Your infrastructure</text><g class="d-box"><rect x="14" y="92" width="111" height="60" rx="10" /><text x="70" y="118" text-anchor="middle">AI client</text><text class="d-sub" x="70" y="136" text-anchor="middle">Claude · agent</text></g><g class="d-arrow"><path d="M129 122H155" /><path d="M149 117l6 5-6 5" /></g><g class="d-box d-accent"><rect x="159" y="92" width="111" height="60" rx="10" /><text x="215" y="118" text-anchor="middle">MCP server</text><text class="d-sub" x="215" y="136" text-anchor="middle">Node.js</text></g><g class="d-arrow"><path d="M274 122H300" /><path d="M294 117l6 5-6 5" /></g><g class="d-box"><rect x="304" y="92" width="111" height="60" rx="10" /><text x="360" y="118" text-anchor="middle">Auth &amp; audit</text><text class="d-sub" x="360" y="136" text-anchor="middle">per-tool scopes</text></g><g class="d-arrow"><path d="M420 122H446" /><path d="M440 117l6 5-6 5" /></g><g class="d-box"><rect x="450" y="92" width="111" height="60" rx="10" /><text x="505" y="118" text-anchor="middle">Internal APIs</text><text class="d-sub" x="505" y="136" text-anchor="middle">CRM · admin</text></g><g class="d-arrow"><path d="M565 122H591" /><path d="M585 117l6 5-6 5" /></g><g class="d-box"><rect x="595" y="92" width="111" height="60" rx="10" /><text x="650" y="118" text-anchor="middle">Database</text><text class="d-sub" x="650" y="136" text-anchor="middle">read-only</text></g></svg><figcaption>The MCP server is the only path from the AI to your systems, which makes it the right place for security.</figcaption></figure>
+          <ul class="cs-list">
+            <li><strong>Transport:</strong> stdio for a local, single-user tool. HTTP for a shared server next to your systems.</li>
+            <li><strong>Tools, not access:</strong> expose narrow actions (<code>find_customer</code>, <code>create_ticket</code>), never a generic query endpoint.</li>
+            <li><strong>One server per domain:</strong> small servers are easier to secure, test and reason about than one giant gateway.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>A minimal MCP server in Node.js</h2>
+          <p>The official TypeScript/JavaScript SDK keeps it short. This exposes a single read-only tool with validated input:</p>
+          <figure class="cs-code"><figcaption>JavaScript · server.js</figcaption><pre><code>import { McpServer } from &quot;@modelcontextprotocol/sdk/server/mcp.js&quot;;
+import { StdioServerTransport } from &quot;@modelcontextprotocol/sdk/server/stdio.js&quot;;
+import { z } from &quot;zod&quot;;
+import { findCustomerByEmail } from &quot;./db.js&quot;;
+
+const server = new McpServer({ name: &quot;internal-tools&quot;, version: &quot;1.0.0&quot; });
+
+server.tool(
+  &quot;find_customer&quot;,
+  { email: z.string().email() },
+  async ({ email }) =&gt; {
+    const customer = await findCustomerByEmail(email); // read-only query
+    return { content: [{ type: &quot;text&quot;, text: JSON.stringify(customer ?? null) }] };
+  }
+);
+
+await server.connect(new StdioServerTransport());</code></pre></figure>
+          <p>Two dependencies: the SDK and a schema validator. That's in keeping with how I build everything: <a href="/guides/reduce-npm-dependencies/">fewer dependencies, less to audit</a>.</p>
+        </section>
+
+        <section>
+          <h2>Security checklist</h2>
+          <ul class="cs-results">
+            <li><span class="cs-check" aria-hidden="true">✓</span><div><strong>Least privilege per tool.</strong> Read-only by default, and write tools scoped to exactly one action.</div></li>
+            <li><span class="cs-check" aria-hidden="true">✓</span><div><strong>Validate every input.</strong> Schemas on every tool, so the model can't pass anything unexpected downstream.</div></li>
+            <li><span class="cs-check" aria-hidden="true">✓</span><div><strong>Authenticate the human, not just the app.</strong> On HTTP transport, act with the calling user's permissions.</div></li>
+            <li><span class="cs-check" aria-hidden="true">✓</span><div><strong>Audit log everything.</strong> Who asked, which tool, which arguments, what came back.</div></li>
+            <li><span class="cs-check" aria-hidden="true">✓</span><div><strong>Confirm destructive actions.</strong> Deletes, payments and emails need explicit human approval.</div></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Claude or a self-hosted model?</h2>
+          <p>The same MCP server works with both. I typically use <strong>Claude</strong> for agents that need strong reasoning across many tools, and a <strong>self-hosted model on Ollama or llama.cpp</strong> when the data involved must stay in-house. See the <a href="/work/private-ai-self-hosted-llm/">private AI case study</a> for how that side is built.</p>
+        </section>
+
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>What is an MCP server?</summary>
+            <p>An MCP server exposes tools (actions), resources (data) and prompts to AI applications through the open Model Context Protocol. Any MCP-compatible client, such as Claude Desktop, Claude Code or your own agent, can discover and call them without custom integration code for each one.</p>
+          </details>
+          <details>
+            <summary>Should I use stdio or HTTP transport?</summary>
+            <p>Use stdio when the server runs on the same machine as a single user's AI client, for example a developer tool. Use the HTTP transport when the server is shared by a team or runs next to your internal systems, and put authentication in front of it.</p>
+          </details>
+          <details>
+            <summary>Can I use MCP with Ollama or llama.cpp?</summary>
+            <p>Yes. The MCP server doesn't care which model calls it. With a self-hosted model that supports tool calling, your own agent loop (or an MCP-capable client) passes the tool definitions to the model and executes the calls it makes, so sensitive data never leaves your infrastructure.</p>
+          </details>
+          <details>
+            <summary>Is it safe to give an AI agent access to internal systems?</summary>
+            <p>It is when access is designed like any other integration: least-privilege tools, read-only by default, validated inputs, per-user authentication, audit logs, and human confirmation for anything destructive. Never expose a raw SQL or shell tool.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Want Claude or a private LLM working with your internal tools?</h2>
+            <p>I design and build MCP servers, AI agents and the Node.js services behind them, from the first tool to production. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/bun-vs-nodejs-production/"><span class="rel-kicker">Runtimes</span><strong>Bun vs Node.js in production: when I choose each</strong></a><a class="card rel-card" href="/guides/aws-lambda-cost-optimization-rust-arm64/"><span class="rel-kicker">Serverless & AWS</span><strong>AWS Lambda cost optimization: Node.js, Rust and arm64</strong></a><a class="card rel-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><strong>Private AI translation with self-hosted LLMs</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>
