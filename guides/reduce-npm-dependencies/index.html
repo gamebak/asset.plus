@@ -131,6 +131,14 @@
         },
         {
           "@type": "Question",
+          "name": "Should I copy a function from an npm package into my project?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If you only use one or two small functions from a large library, porting them into your own codebase is often the better trade: one less dependency to update and audit, and code you fully understand. Check the license first (MIT and similar licenses require keeping the copyright notice), add tests, and keep a comment pointing to the original. Don't do it for security-sensitive code like cryptography or parsers, where you want the maintainers' fixes."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Does AI-generated code add more dependencies?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -194,7 +202,7 @@
           <p class="eyebrow">Guide · Lean software</p>
           <h1>Less code = more: how to reduce npm dependencies</h1>
           <p class="cs-lead">Every package you install is code you didn't write, didn't review and now have to trust. With AI assistants adding packages faster than ever, keeping dependencies lean is one of the cheapest <strong>security</strong> and <strong>performance</strong> wins available.</p>
-          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 6 min read</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 7 min read</p>
         </div>
       </header>
 
@@ -239,7 +247,33 @@ npx depcheck</code></pre></figure>
         </section>
 
         <section>
-          <h2>Step 3: Put guardrails in place</h2>
+          <h2>Step 3: Using one function from a big library? Port it</h2>
+          <p>A common pattern: a project installs a whole utility library and uses <strong>one or two functions</strong> from it. In that case, the better move is often to <strong>port just what you use</strong> into your own code. You get one less package to update and audit, and code you actually understand.</p>
+          <figure class="cs-code"><figcaption>Shell · what do we actually use from it?</figcaption><pre><code># every line that imports or requires the package
+grep -rn &quot;lodash&quot; src/
+
+# which functions? (e.g. import { debounce } from &quot;lodash&quot;)
+grep -rhoE &quot;import [{][^}]*[}] from .lodash&quot; src/</code></pre></figure>
+          <p>If the answer is "just <code>debounce</code>", that's ten lines:</p>
+          <figure class="cs-code"><figcaption>JavaScript · src/utils/debounce.js</figcaption><pre><code>// Replaces our lodash dependency: debounce was the only function we used.
+export function debounce(fn, wait = 200) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() =&gt; fn.apply(this, args), wait);
+  };
+}</code></pre></figure>
+          <ul class="cs-results">
+            <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Check the license.</strong> MIT, BSD and Apache allow copying, but you must keep the copyright and license notice. A comment with the source and license is enough.</div></li>
+            <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Port only what you need.</strong> You don't need every option and edge case the library supports, only the behaviour your app relies on.</div></li>
+            <li><span class="cs-check" aria-hidden="true">3</span><div><strong>Add tests</strong> for that behaviour before removing the package, so the swap is provably safe.</div></li>
+            <li><span class="cs-check" aria-hidden="true">4</span><div><strong>Then uninstall</strong> and check the bundle size and lockfile shrink.</div></li>
+          </ul>
+          <p><strong>When not to port:</strong> security-sensitive code (cryptography, authentication, parsers of untrusted input) and anything that changes often. There you want the maintainers' fixes, not a frozen copy.</p>
+        </section>
+
+        <section>
+          <h2>Step 4: Put guardrails in place</h2>
           <ul class="cs-list">
             <li><strong>Commit the lockfile</strong> and install with <code>npm ci</code> in CI, so builds use exactly what you reviewed.</li>
             <li><strong>Review new dependencies</strong> in pull requests like code: who maintains it, how big is it, what does it pull in?</li>
@@ -268,6 +302,10 @@ npx depcheck</code></pre></figure>
           <details>
             <summary>Which packages can be replaced with native Node.js APIs?</summary>
             <p>Common ones: node-fetch and axios (global fetch), uuid (crypto.randomUUID), dotenv (node --env-file), nodemon (node --watch), rimraf (fs.rm with recursive), and many lodash helpers (modern array and object methods, structuredClone).</p>
+          </details>
+          <details>
+            <summary>Should I copy a function from an npm package into my project?</summary>
+            <p>If you only use one or two small functions from a large library, porting them into your own codebase is often the better trade: one less dependency to update and audit, and code you fully understand. Check the license first (MIT and similar licenses require keeping the copyright notice), add tests, and keep a comment pointing to the original. Don't do it for security-sensitive code like cryptography or parsers, where you want the maintainers' fixes.</p>
           </details>
           <details>
             <summary>Does AI-generated code add more dependencies?</summary>
