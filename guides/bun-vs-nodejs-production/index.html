@@ -51,7 +51,10 @@
       "mainEntityOfPage": "https://asset.plus/guides/bun-vs-nodejs-production/",
       "about": [
         "Bun",
+        "Bun.serve",
         "Node.js",
+        "Express",
+        "HTTP server",
         "JavaScript runtime",
         "Performance",
         "Migration"
@@ -109,6 +112,14 @@
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Usually for startup time, package installs and some HTTP workloads. Whether that matters depends on your bottleneck: if your service waits on a database, a faster runtime changes little."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I use Express with Bun?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For new services, use Bun's built-in HTTP server (Bun.serve) instead: it has routing built in, needs no dependencies and is faster, because requests don't go through Node's compatibility layer and Express's middleware stack. For existing Express apps, keep Express. It runs on Bun as-is, so you can switch runtimes without rewriting your routes."
           }
         },
         {
@@ -184,7 +195,7 @@
           <p class="eyebrow">Guide · Runtimes</p>
           <h1>Bun vs Node.js in production: when I choose each</h1>
           <p class="cs-lead">I use both. <strong>Bun</strong> is fast and pleasant, with a test runner, bundler and package manager built in. <strong>Node.js</strong> is the battle-tested default. The right choice depends less on benchmarks and more on your dependencies and how you operate in production.</p>
-          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 5 min read</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 7 min read</p>
         </div>
       </header>
 
@@ -218,11 +229,61 @@
         </section>
 
         <section>
+          <h2>New service? Use Bun's native HTTP server, not Express</h2>
+          <p>Bun ships its own HTTP server, <code>Bun.serve</code>, with routing built in. On a new project, it's my default instead of Express: <strong>zero dependencies</strong>, less code, and it's <strong>faster</strong>, because requests don't pass through the Node.js compatibility layer and Express's middleware stack.</p>
+          <figure class="cs-code"><figcaption>JavaScript · server.js (Bun native)</figcaption><pre><code>const users = [];
+
+const server = Bun.serve({
+  port: 3000,
+  routes: {
+    &quot;/health&quot;: new Response(&quot;ok&quot;),
+
+    &quot;/api/users/:id&quot;: (req) =&gt; Response.json({ id: req.params.id }),
+
+    &quot;/api/users&quot;: {
+      GET: () =&gt; Response.json(users),
+      POST: async (req) =&gt; {
+        const user = await req.json();
+        users.push(user);
+        return Response.json(user, { status: 201 });
+      },
+    },
+  },
+
+  // anything not matched above
+  fetch() {
+    return new Response(&quot;Not found&quot;, { status: 404 });
+  },
+});
+
+console.log(`Listening on ${server.url}`);</code></pre></figure>
+          <p>It uses standard web <code>Request</code> and <code>Response</code> objects, the same ones as <code>fetch()</code>, so the code is portable and easy to test.</p>
+        </section>
+
+        <section>
+          <h2>Existing Express app? Keep it, just change the runtime</h2>
+          <p>On older projects, rewriting every route and middleware isn't worth the risk. Bun runs Express and most npm packages as they are, so you can get Bun's faster startup and installs <strong>without touching the application code</strong>:</p>
+          <figure class="cs-code"><figcaption>JavaScript · server.js (Express, unchanged)</figcaption><pre><code>import express from &quot;express&quot;;
+
+const app = express();
+app.use(express.json());
+
+app.get(&quot;/health&quot;, (req, res) =&gt; res.send(&quot;ok&quot;));
+app.get(&quot;/api/users/:id&quot;, (req, res) =&gt; res.json({ id: req.params.id }));
+
+app.listen(3000);</code></pre></figure>
+          <figure class="cs-code"><figcaption>Shell</figcaption><pre><code># same code, two runtimes
+node server.js
+bun server.js</code></pre></figure>
+          <p>Then, if a hot endpoint needs more speed later, move just that service to <code>Bun.serve</code>. No big-bang rewrite needed.</p>
+        </section>
+
+        <section>
           <h2>Where I use Bun</h2>
           <ul class="cs-list">
             <li><strong>Dev and CI tooling:</strong> <code>bun install</code> and <code>bun test</code> cut feedback loops dramatically.</li>
             <li><strong>Scripts and internal tools:</strong> TypeScript and JSX run directly, with no build step.</li>
-            <li><strong>New, small HTTP services</strong> where fast startup helps, such as serverless functions or containers that scale to zero.</li>
+            <li><strong>New HTTP services</strong> on <code>Bun.serve</code>, where fast startup and zero dependencies help, such as serverless functions or containers that scale to zero.</li>
           </ul>
         </section>
 
@@ -248,6 +309,10 @@
           <details>
             <summary>Is Bun faster than Node.js?</summary>
             <p>Usually for startup time, package installs and some HTTP workloads. Whether that matters depends on your bottleneck: if your service waits on a database, a faster runtime changes little.</p>
+          </details>
+          <details>
+            <summary>Should I use Express with Bun?</summary>
+            <p>For new services, use Bun's built-in HTTP server (Bun.serve) instead: it has routing built in, needs no dependencies and is faster, because requests don't go through Node's compatibility layer and Express's middleware stack. For existing Express apps, keep Express. It runs on Bun as-is, so you can switch runtimes without rewriting your routes.</p>
           </details>
           <details>
             <summary>Can I use Bun without changing my production runtime?</summary>
