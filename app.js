@@ -149,7 +149,11 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
     screen.textContent = lines.slice(-ROWS).join('\n');
     screen.append(cursor);
   };
-  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let visible = false;
+  // pause between steps while the screen is off-screen or the tab is hidden
+  const whenVisible = async () => { while (!visible || document.hidden) await sleep(400); };
+  const wait = async ms => { await sleep(ms); await whenVisible(); };
   const type = async text => {
     for (const ch of text) {
       lines[lines.length - 1] += ch;
@@ -171,9 +175,7 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
     return;
   }
 
-  let visible = false;
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(screen);
-  const whenVisible = async () => { while (!visible || document.hidden) await wait(400); };
 
   (async function loop() {
     for (;;) {
