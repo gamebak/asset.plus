@@ -92,6 +92,38 @@
   els.forEach(el => io.observe(el));
 })();
 
+// ── Code colors: comments, strings, keywords and numbers only ────
+(() => {
+  const STRING = /"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`/.source;
+  const KEYWORD = /\b(?:async|await|break|case|catch|class|const|continue|default|delete|else|export|extends|false|finally|fn|for|from|function|if|impl|import|in|let|match|mod|mut|new|null|of|pub|return|self|static|struct|switch|this|throw|true|try|typeof|undefined|use|while)\b/.source;
+  const NUMBER = /\b\d[\d_.]*\b/.source;
+  const slash = new RegExp(`(\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/)|(${STRING})|\\.[A-Za-z]\\w*|(${KEYWORD})|(${NUMBER})`, 'g');
+  const hash = new RegExp(`(#.*)|(${STRING})`, 'g');
+  const CLASSES = ['c', 's', 'k', 'n'];
+
+  document.querySelectorAll('.cs-code').forEach(fig => {
+    const code = fig.querySelector('pre code');
+    if (!code) return;
+    const lang = fig.querySelector('figcaption')?.textContent ?? '';
+    const re = /^(Shell|TOML|YAML|Docker)/i.test(lang) ? hash : slash;
+    const text = code.textContent;
+    const out = document.createDocumentFragment();
+    let last = 0;
+    for (const m of text.matchAll(re)) {
+      const kind = m.slice(1).findIndex(g => g !== undefined);
+      if (kind < 0) continue; // property names like .use stay plain
+      out.append(text.slice(last, m.index));
+      const span = document.createElement('span');
+      span.className = 'tok-' + CLASSES[kind];
+      span.textContent = m[0];
+      out.append(span);
+      last = m.index + m[0].length;
+    }
+    out.append(text.slice(last));
+    code.replaceChildren(out);
+  });
+})();
+
 // ── Copy buttons on code blocks ──────────────────────────────────
 (() => {
   const copyText = async (text) => {

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Pages Cache: Why Updates Don't Show &amp; How to Fix It</title>
+  <meta name="description" content="GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/github-pages-cache-busting/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/github-pages-cache-busting/">
+  <meta property="og:title" content="GitHub Pages cache: why your update doesn't show">
+  <meta property="og:description" content="GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.">
+  <meta property="og:image" content="https://asset.plus/assets/cards/github-pages-cache-busting-16x9.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="GitHub Pages cache: why your update doesn't show">
+  <meta name="twitter:description" content="GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.">
+  <meta name="twitter:image" content="https://asset.plus/assets/cards/github-pages-cache-busting-16x9.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://asset.plus/guides/github-pages-cache-busting/#article",
+      "headline": "GitHub Pages cache: why your update doesn't show",
+      "description": "GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.",
+      "image": [
+        "https://asset.plus/assets/cards/github-pages-cache-busting-16x9.jpg",
+        "https://asset.plus/assets/cards/github-pages-cache-busting-4x3.jpg",
+        "https://asset.plus/assets/cards/github-pages-cache-busting-1x1.jpg"
+      ],
+      "datePublished": "2026-11-24T21:00:00+02:00",
+      "dateModified": "2026-11-24T21:00:00+02:00",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/github-pages-cache-busting/",
+      "about": [
+        "GitHub Pages",
+        "Cache-Control",
+        "Browser cache",
+        "Cache busting",
+        "CSS",
+        "JavaScript",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "GitHub Pages cache",
+          "item": "https://asset.plus/guides/github-pages-cache-busting/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How long does GitHub Pages cache files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "10 minutes. In November 2026, GitHub Pages sent Cache-Control: max-age=600 for HTML, CSS and images. After that the browser checks whether the file has changed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I clear the GitHub Pages cache?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can't clear your visitors' browsers. For yourself, use a hard reload: Cmd+Shift+R on macOS or Ctrl+Shift+R on Windows and Linux. For everyone else, change the URL of your CSS and JavaScript files when their content changes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I set Cache-Control headers on GitHub Pages?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. GitHub Pages doesn't let you configure response headers. Use versioned file URLs, put a CDN in front of the site, or choose a host with configurable headers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is my CSS not updating on GitHub Pages?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Either the deploy hasn't finished or your browser is using a cached copy. Fetch the file with curl. If the live file has your change, it's the browser cache and a hard reload will fix it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does cache busting help with the HTML page itself?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. People need the page's normal URL, so it can stay cached for up to 10 minutes. Versioning makes sure that once they get the new HTML, they also get the matching CSS and JavaScript."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">GitHub Pages cache</span>
+          </nav>
+          <p class="eyebrow">Guide · Web performance</p>
+          <h1>GitHub Pages cache: why your update doesn't show</h1>
+          <p class="cs-lead">You deployed, the workflow is green, and the site still looks old. On <strong>GitHub Pages</strong> the usual cause is a <strong>10-minute browser cache</strong> you can't configure. Here's how to confirm it, and a small script that stops it from breaking your CSS and JavaScript.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 5 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>The short answer</h2>
+          <ul class="cs-list">
+            <li><strong>Just need to see your change?</strong> Hard-reload: Cmd+Shift+R on macOS, Ctrl+Shift+R on Windows and Linux.</li>
+            <li><strong>Why it happens:</strong> GitHub Pages sends <code>Cache-Control: max-age=600</code>, so a browser may reuse a file for 10 minutes without asking.</li>
+            <li><strong>You can't change that header</strong> in your repository.</li>
+            <li><strong>Lasting fix for CSS and JavaScript:</strong> change their URL whenever their content changes.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Is it the deploy or the cache?</h2>
+          <p>Two delays look the same. GitHub says changes can take <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site" rel="noopener">up to 10 minutes to publish</a>, and only then does the browser cache matter. Find out which one you have:</p>
+          <figure class="cs-code"><figcaption>Shell</figcaption><pre><code># what is live right now?
+curl -sI https://example.com/styles.css
+
+# does the live file contain your change?
+curl -s https://example.com/styles.css | grep &quot;new-class&quot;</code></pre></figure>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>What you see</th><th>Where the problem is</th></tr></thead>
+              <tbody>
+                <tr><td>The change isn't in the live file</td><td>Not deployed yet. Check the Actions tab.</td></tr>
+                <tr><td>The live file is right, the browser is wrong</td><td>Browser cache</td></tr>
+                <tr><td>It works in a private window</td><td>Browser cache</td></tr>
+                <tr><td><code>last-modified</code> is older than your deploy</td><td>The deploy or the CDN</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>What GitHub Pages really sends</h2>
+          <p>These are response headers from this site, which runs on GitHub Pages, in November 2026:</p>
+          <figure class="cs-code"><figcaption>HTTP · /styles.css</figcaption><pre><code>cache-control: max-age=600
+last-modified: Tue, 24 Nov 2026 17:23:20 GMT
+etag: &quot;6b05c808-7d58&quot;
+x-cache: HIT</code></pre></figure>
+          <ul class="cs-list">
+            <li><strong>Everything gets 10 minutes.</strong> HTML, CSS and images all had the same <code>max-age=600</code>.</li>
+            <li><strong>The ETag is deploy time plus file size.</strong> Here <code>6b05c808</code> is the timestamp in hexadecimal and <code>7d58</code> is 32,088 bytes.</li>
+            <li><strong>So every deploy makes unchanged files look new.</strong> An image committed two days earlier had that day's deploy as its <code>last-modified</code> date, so browsers have to download it again.</li>
+            <li><strong>Between deploys, revalidation is cheap.</strong> Sending the ETag back returned a small <code>304 Not Modified</code>.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The worst case: new HTML with old CSS</h2>
+          <p>Each file's 10 minutes starts when the browser downloads it. A visitor who loaded <code>styles.css</code> just before your deploy, then opens a page they haven't visited yet, gets <strong>new HTML with the old stylesheet</strong>. New elements appear unstyled, or a new button doesn't work because its script is missing.</p>
+          <p>It's hard to notice yourself, because it depends on when each file was cached. If a feature works for some visitors and not others right after a deploy, suspect this first.</p>
+        </section>
+
+        <section>
+          <h2>The fix: version your CSS and JavaScript</h2>
+          <p>If the URL changes whenever the content changes, the browser has no old copy to reuse. This script hashes each file and updates the links in every HTML page. It needs no dependencies, only Node.js 20 or newer:</p>
+          <figure class="cs-code"><figcaption>JavaScript · version-assets.mjs</figcaption><pre><code>import { createHash } from &quot;node:crypto&quot;;
+import { readdirSync, readFileSync, writeFileSync } from &quot;node:fs&quot;;
+
+const ASSETS = [&quot;/styles.css&quot;, &quot;/app.js&quot;];
+
+const versions = ASSETS.map((path) =&gt; {
+  const hash = createHash(&quot;sha256&quot;).update(readFileSync(&quot;.&quot; + path)).digest(&quot;hex&quot;).slice(0, 8);
+  // matches href=&quot;/styles.css&quot; and an older href=&quot;/styles.css?v=1a2b3c4d&quot;
+  const pattern = new RegExp(`((?:href|src)=&quot;)${path.replace(/\./g, &quot;\\.&quot;)}(?:\\?v=[a-f0-9]+)?(&quot;)`, &quot;g&quot;);
+  return { pattern, url: `${path}?v=${hash}` };
+});
+
+const pages = readdirSync(&quot;.&quot;, { recursive: true })
+  .filter((file) =&gt; file.endsWith(&quot;.html&quot;) &amp;&amp; !file.includes(&quot;node_modules&quot;));
+
+for (const page of pages) {
+  const before = readFileSync(page, &quot;utf8&quot;);
+  const after = versions.reduce(
+    (html, { pattern, url }) =&gt; html.replace(pattern, (_, start, end) =&gt; start + url + end),
+    before,
+  );
+  if (after !== before) {
+    writeFileSync(page, after);
+    console.log(&quot;updated&quot;, page);
+  }
+}</code></pre></figure>
+          <figure class="cs-code"><figcaption>HTML · result</figcaption><pre><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css?v=d68d3463&quot;&gt;
+&lt;script src=&quot;/app.js?v=4d61a7b4&quot;&gt;&lt;/script&gt;</code></pre></figure>
+          <p>Run <code>node version-assets.mjs</code> before you commit. If nothing changed, it does nothing, so your Git history stays clean.</p>
+          <h3>Or run it on every deploy</h3>
+          <p>In the repository settings, set the Pages source to GitHub Actions. The links are then updated during the deploy, and your committed HTML stays untouched:</p>
+          <figure class="cs-code"><figcaption>YAML · .github/workflows/deploy.yml</figcaption><pre><code>name: Deploy
+on:
+  push:
+    branches: [main]   # or master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - run: node version-assets.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4</code></pre></figure>
+          <p>With <code>path: .</code> the whole repository is published, so keep private files out of it or upload a build folder instead.</p>
+        </section>
+
+        <section>
+          <h2>Query string or hashed filename?</h2>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th></th><th><code>styles.css?v=d68d3463</code></th><th><code>styles.d68d3463.css</code></th></tr></thead>
+              <tbody>
+                <tr><td>Setup</td><td>Simple, no new files</td><td>Needs a build step</td></tr>
+                <tr><td>Skips the browser cache</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Skips the GitHub CDN cache</td><td>Not in my test</td><td>Yes</td></tr>
+                <tr><td>Old pages still work</td><td>Yes</td><td>Only if you keep old files</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>In my test, the CDN <strong>ignored the query string</strong>: random, never-used values all came back as <code>x-cache: HIT</code>. The query string still solves the browser problem, which is the common one. Choose hashed filenames if you need each URL to always return exactly one version, and keep the previous files for a while, because a cached page may still ask for them.</p>
+        </section>
+
+        <section>
+          <h2>What doesn't work</h2>
+          <ul class="cs-list">
+            <li><strong><code>&lt;meta http-equiv="Cache-Control"&gt;</code>:</strong> don't rely on it. It can't set caching for your CSS, JavaScript or images.</li>
+            <li><strong>A <code>_headers</code> file:</strong> that's a Netlify and Cloudflare Pages feature. GitHub Pages doesn't apply it.</li>
+            <li><strong>A random version on every page load:</strong> it works, but disables caching completely and makes every visit slower.</li>
+            <li><strong>Deploying again:</strong> it doesn't clear copies already in your visitors' browsers.</li>
+          </ul>
+          <p>If you need full control over headers, put a CDN such as Cloudflare in front of the site, or use a host that lets you configure them. For a small site, versioned URLs are usually enough.</p>
+        </section>
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>How long does GitHub Pages cache files?</summary>
+            <p>10 minutes. In November 2026, GitHub Pages sent Cache-Control: max-age=600 for HTML, CSS and images. After that the browser checks whether the file has changed.</p>
+          </details>
+          <details>
+            <summary>How do I clear the GitHub Pages cache?</summary>
+            <p>You can't clear your visitors' browsers. For yourself, use a hard reload: Cmd+Shift+R on macOS or Ctrl+Shift+R on Windows and Linux. For everyone else, change the URL of your CSS and JavaScript files when their content changes.</p>
+          </details>
+          <details>
+            <summary>Can I set Cache-Control headers on GitHub Pages?</summary>
+            <p>No. GitHub Pages doesn't let you configure response headers. Use versioned file URLs, put a CDN in front of the site, or choose a host with configurable headers.</p>
+          </details>
+          <details>
+            <summary>Why is my CSS not updating on GitHub Pages?</summary>
+            <p>Either the deploy hasn't finished or your browser is using a cached copy. Fetch the file with curl. If the live file has your change, it's the browser cache and a hard reload will fix it.</p>
+          </details>
+          <details>
+            <summary>Does cache busting help with the HTML page itself?</summary>
+            <p>No. People need the page's normal URL, so it can stay cached for up to 10 minutes. Versioning makes sure that once they get the new HTML, they also get the matching CSS and JavaScript.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Slow site or fragile deploys?</h2>
+            <p>I review web performance, caching and deployment, and give you a prioritised list of fixes. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><strong>OPFS vs IndexedDB: a benchmark you can run yourself</strong></a><a class="card rel-card" href="/guides/bun-memory-usage-profiling/"><span class="rel-kicker">Runtimes</span><strong>Bun memory usage: find leaks and slow code with profiling</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>

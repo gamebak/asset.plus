@@ -742,8 +742,13 @@ img { display: block; max-width: 100%; height: auto; }
 .copy-btn:hover { border-color: #5cc8ff; color: #fff; }
 .copy-btn.copied { border-color: #4ade80; color: #4ade80; }
 .copy-btn:focus-visible { outline: 2px solid #5cc8ff; outline-offset: 2px; }
-.cs-code pre { margin: 0; padding: 16px; overflow-x: auto; }
-.cs-code code { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: #e6edf3; white-space: pre; font-variant-ligatures: none; }
+.cs-code pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; }
+.cs-code code { font-family: var(--mono); font-size: inherit; color: #e6edf3; white-space: pre; font-variant-ligatures: none; }
+
+.tok-c { color: #8b98a8; }
+.tok-s { color: #a5d6a7; }
+.tok-k { color: #7cc7ff; }
+.tok-n { color: #f0b880; }
 
 .bench { padding: 20px; margin: 20px 0; }
 .bench-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
