@@ -132,6 +132,118 @@
   });
 })();
 
+// ── Listen to a guide (browser text-to-speech) ───────────────────
+(() => {
+  const byline = document.querySelector('.cs-byline');
+  const synth = window.speechSynthesis;
+  if (!byline || !synth || !window.SpeechSynthesisUtterance) return;
+
+  const article = byline.closest('article');
+  const lang = document.documentElement.lang || 'en';
+  const RATES = [1, 1.25, 1.5];
+  const CUES = { 'cs-code': 'Code example on the page.', 'cs-table-wrap': 'Table on the page.', 'cs-diagram': 'Diagram on the page.' };
+  let chunks = [], index = 0, rate = 0, state = 'idle';
+  let current = null; // also keeps the utterance alive: Chrome can drop onend if it's collected
+
+  // short chunks: some Chrome voices cut out on long text
+  const split = text => text.replace(/([.!?:;])\s+/g, '$1\n').split('\n').reduce((out, s) => {
+    const last = out.length - 1;
+    if (last >= 0 && out[last].length + s.length < 200) out[last] += ' ' + s;
+    else out.push(s);
+    return out;
+  }, []);
+
+  const collect = () => {
+    const out = [];
+    article.querySelectorAll('h1, .cs-lead, .cs-body :is(h2, h3, p, li, summary, .cs-code, .cs-table-wrap, .cs-diagram)').forEach(el => {
+      if (el.closest('.cs-cta, .cs-related, .bench') || el.parentElement.closest('li')) return;
+      const cue = CUES[el.classList[0]];
+      if (cue) {
+        if (out[out.length - 1] !== cue) out.push(cue);
+        return;
+      }
+      const copy = el.cloneNode(true);
+      copy.querySelectorAll('[aria-hidden="true"]').forEach(n => n.remove());
+      const text = copy.textContent.replace(/\s+/g, ' ').trim(); // textContent includes closed FAQ answers
+      if (text) out.push(...split(text));
+    });
+    return out;
+  };
+
+  const pickVoice = () => {
+    const voices = synth.getVoices().filter(v => v.localService && v.lang.slice(0, 2) === lang.slice(0, 2));
+    return voices.find(v => v.default) || voices.find(v => /^(Samantha|Daniel|Microsoft)/.test(v.name)); // else the browser picks by lang
+  };
+
+  const button = (label, onClick) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-ghost btn-sm';
+    btn.textContent = label;
+    btn.addEventListener('click', onClick);
+    return btn;
+  };
+
+  const setState = next => {
+    state = next;
+    main.textContent = { idle: '▶︎ Listen', playing: 'Pause', paused: 'Resume' }[next];
+    if (next === 'idle' && document.activeElement === stopBtn) main.focus();
+    stopBtn.hidden = rateBtn.hidden = next === 'idle';
+  };
+
+  const halt = next => {
+    current = null; // makes pending events from the old utterance stale
+    synth.cancel();
+    setState(next);
+  };
+
+  const speak = () => {
+    if (index >= chunks.length) return halt('idle');
+    const u = new SpeechSynthesisUtterance(chunks[index]);
+    const voice = pickVoice();
+    u.lang = voice ? voice.lang : lang;
+    if (voice) u.voice = voice;
+    u.rate = RATES[rate];
+    u.onend = () => { if (current === u) { index++; speak(); } };
+    u.onerror = () => { if (current === u) halt('idle'); };
+    current = u;
+    synth.speak(u);
+  };
+
+  // pause = cancel + restart the same chunk: native pause() is unreliable on Android
+  const main = button('', () => {
+    if (state === 'playing') return halt('paused');
+    if (state === 'idle') { chunks = collect(); index = 0; }
+    synth.cancel(); // clears a stuck queue
+    setState('playing');
+    speak();
+  });
+  const stopBtn = button('Stop', () => halt('idle'));
+  const rateBtn = button('', () => {
+    rate = (rate + 1) % RATES.length;
+    showRate();
+    if (state !== 'playing') return;
+    current = null;
+    synth.cancel();
+    speak();
+  });
+  const showRate = () => {
+    rateBtn.textContent = RATES[rate] + '×';
+    rateBtn.setAttribute('aria-label', 'Speed: ' + RATES[rate] + '×');
+  };
+
+  const row = document.createElement('div');
+  row.className = 'listen';
+  row.setAttribute('role', 'group');
+  row.setAttribute('aria-label', 'Listen to this guide');
+  row.append(main, stopBtn, rateBtn);
+  showRate();
+  setState('idle');
+  byline.after(row);
+
+  window.addEventListener('pagehide', () => { if (state === 'playing') halt('paused'); });
+})();
+
 // ── Footer year ──────────────────────────────────────────────────
 document.getElementById('footer-year').textContent = new Date().getFullYear();
 

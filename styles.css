@@ -687,6 +687,12 @@ img { display: block; max-width: 100%; height: auto; }
 
 .cs-byline { margin-top: 18px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .cs-byline a { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+/* listen controls (added by app.js; the margin reserves their space until then) */
+.js .cs-byline:last-child { margin-bottom: 54px; }
+.listen { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.listen .btn { font-family: inherit; color: var(--text); cursor: pointer; }
+.listen .btn[hidden] { display: none; }
+@media print { .listen { display: none; } }
 .cs-body a:not(.btn):not(.card) { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 .cs-body a:not(.btn):not(.card):hover { color: var(--accent); }
 .cs-body :not(pre) > code {
