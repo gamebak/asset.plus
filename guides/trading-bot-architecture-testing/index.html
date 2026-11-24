@@ -114,7 +114,7 @@
           "name": "Is Node.js fast enough for a trading bot?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "It depends on how fast you need to react. My Node.js bots took between 20 and 500 ms to process, even after heavy optimizations. That can be enough for strategies that don't compete on speed, but when I wanted to go below 20 ms, I had to move to Rust and an async architecture."
+            "text": "It depends on how fast you need to react. My Node.js bots took between 20 and 500 ms to process, even after heavy optimizations. That can be enough for strategies that don't compete on speed, but as competition became fiercer and I needed to go below 20 ms, I had to move to Rust and an async architecture to stay competitive. That brought processing down to 1 to 10 ms."
           }
         },
         {
@@ -130,7 +130,7 @@
           "name": "What's the difference between backtesting and paper trading?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Backtesting runs your strategy against historical data to see how it would have performed. Paper trading runs it live against real-time market data without placing real orders. You need both: backtests find bad ideas cheaply, and paper trading finds the problems history can't, like latency, reconnections and data gaps."
+            "text": "Backtesting runs your strategy against historical data to see how it would have performed. Paper trading runs it against live market data without real orders, and mostly validates that the API endpoints and your integration work. Neither replaces live trading: the real test comes from real orders, even with small sums."
           }
         },
         {
@@ -205,8 +205,8 @@
           </nav>
           <p class="eyebrow">Guide · Algorithmic trading</p>
           <h1>Trading bot architecture: low latency, backtesting and testing</h1>
-          <p class="cs-lead">I built high-frequency trading bots for cross-market arbitrage between 2020 and 2025. I started on <strong>Node.js</strong>, moved to <strong>async Rust</strong> when I wanted to go below 20 ms, and as the competition grew, kept optimizing <strong>down to the TCP level</strong>. Here's what changed at each stage, and what decides whether a bot survives: architecture, risk controls and testing.</p>
-          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 8 min read</p>
+          <p class="cs-lead">I built high-frequency trading bots for cross-market arbitrage between 2020 and 2025. I started on <strong>Node.js</strong>, but over time the competition became fiercer, and to stay competitive I had to move to an <strong>async Rust</strong> architecture, then keep optimizing <strong>down to the TCP level</strong>. Here's what changed at each stage, and what decides whether a bot survives: architecture, risk controls and testing.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 10 min read</p>
         </div>
       </header>
 
@@ -215,10 +215,21 @@
         <section>
           <h2>From Node.js to Rust to TCP: how my bots evolved</h2>
           <ul class="cs-results">
-            <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Node.js: 20 to 500 ms.</strong> My first bots ran on Node.js. Even after heavy optimizations, processing took between 20 and 500 ms.</div></li>
-            <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Async Rust: aiming below 20 ms.</strong> To go lower, I had to move the bots to Rust and an async architecture.</div></li>
-            <li><span class="cs-check" aria-hidden="true">3</span><div><strong>TCP level: keeping up with the competition.</strong> Even Rust wasn't the finish line. As competitors got faster, I had to make many more optimizations, all the way down to TCP.</div></li>
+            <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Node.js: 20 to 500 ms.</strong> Node.js was my first choice. Even after heavy optimizations, processing took between 20 and 500 ms.</div></li>
+            <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Async Rust: 1 to 10 ms.</strong> As time passed and competition became fiercer, I had to move the bots to Rust and an async architecture to stay competitive. Processing dropped to between 1 and 10 ms.</div></li>
+            <li><span class="cs-check" aria-hidden="true">3</span><div><strong>TCP level: keeping up with the competition.</strong> Even Rust wasn't the finish line. As the competition kept growing, I had to make many more optimizations, all the way down to TCP.</div></li>
           </ul>
+          <p>Milliseconds are hard to picture, so here's a familiar reference: a blink of an eye takes <a href="https://bionumbers.hms.harvard.edu/bionumber.aspx?id=100706" rel="noopener">roughly 100 to 400 ms</a>. At its slowest, my Node.js processing could outlast a blink. With Rust it took <strong>1 to 10 ms</strong>, so even the slow end fits into a quick blink ten times over.</p>
+          <figure class="cs-diagram lat" aria-labelledby="lat-cap">
+            <div role="list">
+              <div class="lat-row" role="listitem"><span class="lat-name">Blink of an eye</span><span class="lat-track" aria-hidden="true"><span class="lat-bar lat-ref" style="left:20%;width:60%"></span></span><span class="lat-value">100–400 ms</span></div>
+              <div class="lat-row" role="listitem"><span class="lat-name">Node.js</span><span class="lat-track" aria-hidden="true"><span class="lat-bar" style="left:4%;width:96%"></span></span><span class="lat-value">20–500 ms</span></div>
+              <div class="lat-row" role="listitem"><span class="lat-name">Rust</span><span class="lat-track" aria-hidden="true"><span class="lat-bar" style="left:0.2%;width:1.8%"></span></span><span class="lat-value">1–10 ms</span></div>
+            </div>
+            <div class="lat-axis" aria-hidden="true"><span>0</span><span>250</span><span>500 ms</span></div>
+            <figcaption id="lat-cap">Time ranges on the same linear scale; shorter and further left is faster. Bot figures are processing times from my own systems; the blink range is approximate.</figcaption>
+          </figure>
+          <p>The two bots' ranges don't even overlap: the slowest Rust figure, 10 ms, is half the best Node.js one, 20 ms. The spread shrank too, from 480 ms to 9 ms. For a trading bot that consistency is worth as much as raw speed, because a decision that usually arrives on time but sometimes arrives half a second late is hard to price and hard to trust.</p>
         </section>
 
         <section>
@@ -238,9 +249,10 @@
         <section>
           <h2>Stage 1: Node.js, and where it stops</h2>
           <p>Node.js is a productive place to start. Its event-driven model suits streaming market data, and you can test strategy ideas quickly. With heavy optimization, my bots processed in <strong>20 ms at best and up to 500 ms</strong>.</p>
+          <p>I'd still start there for a new idea. Early on, the biggest risk isn't being 50 ms too slow, it's building the wrong strategy very efficiently. A language that lets you change your mind quickly is an advantage until you know the edge is real.</p>
           <p>That range matters as much as the best case. In arbitrage, a slow reaction can mean trading on a price that no longer exists. Before leaving Node.js, check the usual causes of a slow tail:</p>
           <ul class="cs-list">
-            <li><strong>A blocked event loop:</strong> one long calculation or a large JSON message delays everything queued behind it. Worker threads help, but passing data between threads has a cost.</li>
+            <li><strong>Event loop pressure:</strong> every calculation shares a thread with your market data, so one slow task delays every price behind it. Worker threads and native modules buy time, but passing data back and forth has a cost, and the hot path still depends on the Node.js runtime.</li>
             <li><strong>Garbage collection:</strong> allocating objects for every market update creates work for the collector, and its pauses land on the hot path. Reuse objects where you can.</li>
             <li><strong>I/O on the hot path:</strong> keep order books and positions in memory, and persist asynchronously.</li>
           </ul>
@@ -248,18 +260,19 @@
 
         <section>
           <h2>Stage 2: Rust and async for sub-20 ms</h2>
-          <p>When I wanted to go below 20 ms, tuning Node.js further was no longer enough. I had to upgrade my bots to <strong>Rust and an async architecture</strong>. The two solve different problems:</p>
+          <p>Node.js was the right place to start, but the market didn't stand still. As time passed, I noticed the competition becoming fiercer, and response times that had once been good enough no longer were. To go below 20 ms and stay competitive, I had to move my bots to <strong>Rust and an async architecture</strong>, rather than keep tuning around the Node.js runtime. The two solve different problems:</p>
           <ul class="cs-list">
             <li><strong>Rust</strong> has no garbage collector and gives you control over memory layout and allocation, so the hot path is more predictable.</li>
             <li><strong>Async</strong> lets many connections make progress without a thread each. It doesn't make calculations faster, so CPU-heavy work must stay off the tasks that handle I/O.</li>
             <li><strong>Bounded queues</strong> between stages stop a slow consumer from building an invisible backlog. For prices, it's often better to drop a stale update than to process it late.</li>
           </ul>
+          <p>The result was processing in <strong>1 to 10 ms</strong>. The cost was real too: Rust takes longer to write, async code is harder to debug, and quick experiments stop being quick. That trade makes sense when speed decides whether you win the trade, and much less sense when it doesn't.</p>
           <p>A rewrite alone isn't a strategy. If your time is going to a distant server or a slow exchange API, Rust won't fix it. Measure where the milliseconds go first.</p>
         </section>
 
         <section>
           <h2>Stage 3: competition pushes you down to TCP</h2>
-          <p>Low latency isn't a target you reach once. Arbitrage is a race, so <strong>as the competition grew, yesterday's speed stopped being enough</strong>. Even on Rust I had to make many more optimizations, up to the TCP level. Once your own code is fast, these are typical places to look:</p>
+          <p>Low latency isn't a target you reach once. Arbitrage is a race, and <strong>the competition kept growing after my move to Rust</strong>. Even then, I had to make many more optimizations, up to the TCP level. Once your own code is fast, these are typical places to look:</p>
           <ul class="cs-list">
             <li><strong>Connection reuse:</strong> open and warm up connections before you need them, so an order doesn't wait for a TCP and TLS handshake.</li>
             <li><strong>Small-packet delays:</strong> Nagle's algorithm can hold back small writes. <code>TCP_NODELAY</code> disables it, which usually suits short order messages.</li>
@@ -267,20 +280,40 @@
             <li><strong>Packet loss and retransmissions:</strong> TCP delivers in order, so one lost packet holds back everything after it on that connection.</li>
             <li><strong>Physical distance:</strong> host close to the venue. No socket option beats a shorter route.</li>
           </ul>
+          <p>At this stage the gains get smaller and the work gets harder. A 5 ms delay is background noise for a bot that takes 200 ms, but it can be most of the budget for one that takes 8 ms. Every step you remove makes the next one visible, so the list of things worth fixing never quite runs out.</p>
           <p>Change one thing at a time and measure <strong>p50, p99 and the maximum</strong>, with separate timings for receiving, deciding and sending. An average hides the slow tail, which is where you lose money.</p>
         </section>
 
         <section>
           <h2>How to test a trading bot</h2>
           <p>A faster bot also makes mistakes faster, so testing matters more at every stage. It's layered, and each layer catches what the previous one can't:</p>
-          <ul class="cs-results">
-            <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Unit tests</strong> for strategy and risk logic. Because they're pure functions, edge cases are cheap to cover.</div></li>
-            <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Backtesting</strong> on historical data, with fees, slippage and realistic fill assumptions. No free lunches.</div></li>
-            <li><span class="cs-check" aria-hidden="true">3</span><div><strong>Deterministic replay</strong> of recorded live sessions through the real pipeline, to reproduce bugs exactly.</div></li>
-            <li><span class="cs-check" aria-hidden="true">4</span><div><strong>Simulation with latency and failures:</strong> delayed messages, disconnects, rejected orders.</div></li>
-            <li><span class="cs-check" aria-hidden="true">5</span><div><strong>Paper trading</strong> against live data without real orders, to validate the whole system end to end.</div></li>
-            <li><span class="cs-check" aria-hidden="true">6</span><div><strong>Small live canary</strong> with tight limits and a kill switch, before scaling up.</div></li>
-          </ul>
+          <div class="phases">
+            <div class="phase">
+              <div class="phase-head"><h3>Offline</h3><span>No market, no risk</span></div>
+              <ol class="phase-steps" start="1">
+                <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Unit tests</strong> <span>Strategy and risk logic. Because they're pure functions, edge cases are cheap to cover.</span></div></li>
+                <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Backtesting</strong> <span>Historical data, with fees, slippage and realistic fill assumptions. No free lunches.</span></div></li>
+              </ol>
+            </div>
+            <div class="phase">
+              <div class="phase-head"><h3>Simulated</h3><span>Real conditions, on demand</span></div>
+              <ol class="phase-steps" start="3">
+                <li><span class="cs-check" aria-hidden="true">3</span><div><strong>Deterministic replay</strong> <span>Recorded live sessions through the real pipeline, to reproduce bugs exactly.</span></div></li>
+                <li><span class="cs-check" aria-hidden="true">4</span><div><strong>Latency and failure simulation</strong> <span>Delayed messages, disconnects and rejected orders.</span></div></li>
+              </ol>
+            </div>
+            <div class="phase">
+              <div class="phase-head"><h3>Live</h3><span>Real market, limited exposure</span></div>
+              <ol class="phase-steps" start="5">
+                <li><span class="cs-check" aria-hidden="true">5</span><div><strong>Paper trading</strong> <span>Mostly proves that the API endpoints work: connections, authentication, requests and responses.</span></div></li>
+                <li><span class="cs-check" aria-hidden="true">6</span><div><strong>Small live trading</strong> <span>The real test: real orders and real money, even small sums, with tight limits and a kill switch.</span></div></li>
+              </ol>
+            </div>
+          </div>
+          <h3>Paper trading tests the plumbing, live trading tests the bot</h3>
+          <p>Don't read too much into good paper trading results. What it mostly validates is that the <strong>API endpoints are working</strong>: you can connect and authenticate, market data arrives, orders are formatted correctly, and your bot handles the responses and errors it gets back. That's worth checking before any money is involved, but it's an integration test, not proof that the strategy makes money.</p>
+          <p>Simulated orders never compete for real liquidity. They don't wait in a real queue, they don't move the price, and no faster bot takes the opportunity first. A paper environment can also behave differently from production, with its own fills, latency and limits.</p>
+          <p><strong>The real test comes from live trading, even with small sums.</strong> Only real orders show you actual fills, partial fills, slippage, fees, rejections and how you compare with the competition. Start with an amount you can afford to lose, compare every fill with what the bot expected, and scale up only when the two agree consistently. Small orders won't show you the market impact of larger ones, so increase size gradually.</p>
           <figure class="cs-code"><figcaption>JavaScript · strategy as a pure function (the idea ports directly to Rust)</figcaption><pre><code>// Same input, same output: trivial to unit test and to replay.
 export function spreadSignal({ bidA, askB, feeRate, minEdge }) {
   const edge = (bidA - askB) / askB - 2 * feeRate;
@@ -305,7 +338,7 @@ export function spreadSignal({ bidA, askB, feeRate, minEdge }) {
           <h2>FAQ</h2>
           <details>
             <summary>Is Node.js fast enough for a trading bot?</summary>
-            <p>It depends on how fast you need to react. My Node.js bots took between 20 and 500 ms to process, even after heavy optimizations. That can be enough for strategies that don't compete on speed, but when I wanted to go below 20 ms, I had to move to Rust and an async architecture.</p>
+            <p>It depends on how fast you need to react. My Node.js bots took between 20 and 500 ms to process, even after heavy optimizations. That can be enough for strategies that don't compete on speed, but as competition became fiercer and I needed to go below 20 ms, I had to move to Rust and an async architecture to stay competitive. That brought processing down to 1 to 10 ms.</p>
           </details>
           <details>
             <summary>Is moving a trading bot to Rust enough to stay competitive?</summary>
@@ -313,7 +346,7 @@ export function spreadSignal({ bidA, askB, feeRate, minEdge }) {
           </details>
           <details>
             <summary>What&#x27;s the difference between backtesting and paper trading?</summary>
-            <p>Backtesting runs your strategy against historical data to see how it would have performed. Paper trading runs it live against real-time market data without placing real orders. You need both: backtests find bad ideas cheaply, and paper trading finds the problems history can't, like latency, reconnections and data gaps.</p>
+            <p>Backtesting runs your strategy against historical data to see how it would have performed. Paper trading runs it against live market data without real orders, and mostly validates that the API endpoints and your integration work. Neither replaces live trading: the real test comes from real orders, even with small sums.</p>
           </details>
           <details>
             <summary>Why do trading bots that look profitable in backtests lose money live?</summary>

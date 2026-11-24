@@ -664,8 +664,41 @@ img { display: block; max-width: 100%; height: auto; }
 .d-accent rect { stroke: var(--accent); stroke-width: 2; }
 .d-arrow path { fill: none; stroke: var(--accent); stroke-width: 2; }
 
+/* grouped steps (testing phases) */
+.phases { margin: 20px 0 28px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.phase { display: grid; grid-template-columns: 170px 1fr; }
+.phase + .phase { border-top: 1px solid var(--border); }
+.phase-head { padding: 22px 20px; background: var(--bg-alt); border-left: 3px solid var(--accent); }
+.phase-head h3 { margin: 0 0 6px; font-size: 18px; }
+.phase-head span { display: block; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.phase-steps { list-style: none; margin: 0; padding: 22px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+.phase-steps li { display: flex; gap: 12px; }
+.phase-steps strong { display: block; margin-bottom: 4px; font-size: 16px; line-height: 1.5; }
+.phase-steps div > span { display: block; font-size: 15px; line-height: 1.5; color: var(--muted); }
+@media (max-width: 640px) {
+  .phase, .phase-steps { grid-template-columns: 1fr; }
+  .phase-head { padding: 14px 18px; }
+  .phase-steps { padding: 18px; }
+}
+
+/* latency range chart */
+.lat-row { display: grid; grid-template-columns: 120px 1fr 92px; align-items: center; gap: 12px; padding: 10px 0; font-size: 14px; }
+.lat-name { font-weight: 600; }
+.lat-value { font-family: var(--mono); font-size: 13px; text-align: right; white-space: nowrap; }
+.lat-track { position: relative; height: 16px; border-radius: 4px; background: var(--bg-alt); }
+.lat-bar { position: absolute; top: 0; bottom: 0; min-width: 4px; border-radius: 4px; background: var(--accent); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.lat-ref { background: var(--muted); }
+.lat-axis { display: flex; justify-content: space-between; margin: 0 104px 0 132px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+@media (max-width: 640px) {
+  .lat-row { grid-template-columns: 1fr auto; gap: 6px 12px; }
+  .lat-track { grid-column: 1 / -1; grid-row: 2; }
+  .lat-axis { margin: 0; }
+}
+@media (forced-colors: active) { .lat-bar { background: CanvasText; } }
+
 .cs-results { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .cs-results li { display: flex; gap: 14px; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--muted); }
+.cs-results + p { margin-top: 24px; }
 .cs-results strong { color: var(--text); }
 .cs-check { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; }
 
