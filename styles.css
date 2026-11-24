@@ -97,6 +97,9 @@ img { display: block; max-width: 100%; height: auto; }
   z-index: 100;
 }
 .skip-link:focus { top: 12px; }
+/* skip link target: show where focus landed; offset keeps the ring inside the viewport */
+#main:focus { outline: none; }
+#main:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
 
 /* ── Buttons ────────────────────────────────────────────────────── */
 .btn {
