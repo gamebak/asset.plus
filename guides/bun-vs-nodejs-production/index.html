@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bun vs Node.js in Production: When I Choose Each</title>
-  <meta name="description" content="Bun vs Node.js for production apps: speed, compatibility, tooling and migration risks, with a practical decision checklist from a senior engineer.">
+  <meta name="description" content="Bun vs Node.js in production: performance, npm compatibility, Jest to bun test migration, and a checklist to decide if Bun is production ready for you.">
   <meta name="author" content="Alexandru Cobuz">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://asset.plus/guides/bun-vs-nodejs-production/">
@@ -18,14 +18,14 @@
   <meta property="og:site_name" content="Asset.plus">
   <meta property="og:url" content="https://asset.plus/guides/bun-vs-nodejs-production/">
   <meta property="og:title" content="Bun vs Node.js in production: when I choose each">
-  <meta property="og:description" content="Bun vs Node.js for production apps: speed, compatibility, tooling and migration risks, with a practical decision checklist from a senior engineer.">
+  <meta property="og:description" content="Bun vs Node.js in production: performance, npm compatibility, Jest to bun test migration, and a checklist to decide if Bun is production ready for you.">
   <meta property="og:image" content="https://asset.plus/assets/cards/bun-vs-nodejs-production-16x9.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="675">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@CobuzAlexandru">
   <meta name="twitter:title" content="Bun vs Node.js in production: when I choose each">
-  <meta name="twitter:description" content="Bun vs Node.js for production apps: speed, compatibility, tooling and migration risks, with a practical decision checklist from a senior engineer.">
+  <meta name="twitter:description" content="Bun vs Node.js in production: performance, npm compatibility, Jest to bun test migration, and a checklist to decide if Bun is production ready for you.">
   <meta name="twitter:image" content="https://asset.plus/assets/cards/bun-vs-nodejs-production-16x9.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,14 +42,14 @@
       "@type": "Article",
       "@id": "https://asset.plus/guides/bun-vs-nodejs-production/#article",
       "headline": "Bun vs Node.js in production: when I choose each",
-      "description": "Bun vs Node.js for production apps: speed, compatibility, tooling and migration risks, with a practical decision checklist from a senior engineer.",
+      "description": "Bun vs Node.js in production: performance, npm compatibility, Jest to bun test migration, and a checklist to decide if Bun is production ready for you.",
       "image": [
         "https://asset.plus/assets/cards/bun-vs-nodejs-production-16x9.jpg",
         "https://asset.plus/assets/cards/bun-vs-nodejs-production-4x3.jpg",
         "https://asset.plus/assets/cards/bun-vs-nodejs-production-1x1.jpg"
       ],
       "datePublished": "2026-11-22T09:00:00+02:00",
-      "dateModified": "2026-11-22T09:00:00+02:00",
+      "dateModified": "2026-11-24T20:00:00+02:00",
       "author": {
         "@id": "https://asset.plus/#person"
       },
@@ -65,7 +65,11 @@
         "HTTP server",
         "JavaScript runtime",
         "Performance",
-        "Migration"
+        "Migration",
+        "bun test",
+        "Jest",
+        "Unit testing",
+        "npm compatibility"
       ]
     },
     {
@@ -145,6 +149,22 @@
             "@type": "Answer",
             "text": "Native addons, packages relying on Node internals, process management patterns like the cluster module, and observability agents. Audit those first."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I migrate from Jest to bun test?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, often with a few changes. Bun's native test runner supports the Jest style of describe, test, expect, jest.fn, jest.spyOn, snapshots and fake timers. Check automocks, jest.requireActual, jest.resetModules, jsdom tests and setup files, and use --isolate if module mocks leak between files."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Bun 100% compatible with Node.js?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Bun implements most Node.js APIs and runs most npm packages, but native addons and packages that depend on Node.js or V8 internals can fail. Run your full test suite and a production-like load test before switching."
+          }
         }
       ]
     }
@@ -214,12 +234,12 @@
           <ul class="cs-list">
             <li><strong>New, small service with mainstream dependencies?</strong> Bun is a great choice.</li>
             <li><strong>Long-lived, business-critical service with native addons or an APM agent?</strong> Stay on Node.js unless you have a measured reason to move.</li>
-            <li><strong>Not sure?</strong> Adopt Bun for tooling first (installs, tests, scripts) and keep Node.js in production.</li>
+            <li><strong>Not sure?</strong> Adopt Bun for tooling first (<code>bun install</code>, <code>bun test</code>, scripts) and keep Node.js in production.</li>
           </ul>
         </section>
 
         <section>
-          <h2>Side by side</h2>
+          <h2>Bun vs Node.js side by side</h2>
           <div class="cs-table-wrap">
             <table class="cs-table">
               <thead><tr><th></th><th>Bun</th><th>Node.js</th></tr></thead>
@@ -227,6 +247,7 @@
                 <tr><td>Startup &amp; cold start</td><td>Very fast</td><td>Good, slower</td></tr>
                 <tr><td>Package installs</td><td>Much faster</td><td>npm, pnpm, yarn</td></tr>
                 <tr><td>Built-in tooling</td><td>Test runner, bundler, TS/JSX</td><td>Test runner, watch mode, env files</td></tr>
+                <tr><td>Unit testing</td><td><code>bun test</code>, Jest-compatible API</td><td>Built-in <code>node:test</code>, Jest, Vitest</td></tr>
                 <tr><td>npm compatibility</td><td>High, with edge cases</td><td>The reference implementation</td></tr>
                 <tr><td>Native addons</td><td>Partial, test each one</td><td>Full</td></tr>
                 <tr><td>Debugging &amp; APM</td><td>Improving</td><td>Mature ecosystem</td></tr>
@@ -234,6 +255,12 @@
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section>
+          <h2>Is Bun production ready and compatible with Node.js?</h2>
+          <p>Bun is <strong>production ready for many workloads</strong>, but it isn't 100% compatible with Node.js. It implements most Node.js APIs and runs most npm packages, so a typical REST API or background worker has a good chance of running unchanged. Native addons and packages that depend on V8 or Node.js internals need the most testing.</p>
+          <p>Treat published Bun vs Node.js performance benchmarks as a hint. They usually measure the runtime alone, while a real backend also waits on databases and other services. Compare <strong>latency, throughput and memory usage</strong> on your own app.</p>
         </section>
 
         <section>
@@ -296,7 +323,49 @@ bun server.js</code></pre></figure>
         </section>
 
         <section>
-          <h2>Migration checklist</h2>
+          <h2>Migrate from Jest to bun test</h2>
+          <p>Unit tests are one of the easiest places to adopt Bun. Its <strong>native test runner</strong> supports a Jest-compatible API, so you can often move a suite with a few changes while the app itself stays on Node.js. There's no separate test runner to install, and TypeScript and JSX work without Babel or <code>ts-jest</code>.</p>
+          <figure class="cs-code"><figcaption>Shell</figcaption><pre><code>bun test                      # run every test file
+bun test --coverage           # with code coverage
+bun test --isolate            # fresh globals for each file
+bun test -t &quot;creates a user&quot;  # filter by test name</code></pre></figure>
+          <p>This familiar Jest test runs as it is, with no imports to change:</p>
+          <figure class="cs-code"><figcaption>JavaScript · total.test.js</figcaption><pre><code>import { total } from &quot;./total.js&quot;;
+
+jest.mock(&quot;./price.js&quot;, () =&gt; ({ rate: () =&gt; 10 }));
+
+test(&quot;calculates the total&quot;, () =&gt; {
+  expect(total(2)).toBe(20);
+});</code></pre></figure>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Jest</th><th>In bun test</th></tr></thead>
+              <tbody>
+                <tr><td><code>describe</code>, <code>test</code>, <code>expect</code>, hooks</td><td>Same</td></tr>
+                <tr><td><code>test.each</code>, snapshots, async matchers</td><td>Same</td></tr>
+                <tr><td><code>jest.fn</code>, <code>jest.spyOn</code>, fake timers</td><td>Same</td></tr>
+                <tr><td><code>jest.mock(path, factory)</code></td><td>Works. Native name: <code>mock.module</code></td></tr>
+                <tr><td><code>jest.mock(path)</code> automock</td><td>Add a factory function</td></tr>
+                <tr><td><code>requireActual</code>, <code>resetModules</code>, <code>isolateModules</code></td><td>Missing, rewrite those tests</td></tr>
+                <tr><td>Setup files</td><td><code>preload</code> in <code>bunfig.toml</code></td></tr>
+                <tr><td><code>testEnvironment: "jsdom"</code></td><td>No DOM by default, use happy-dom</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="cs-code"><figcaption>TOML · bunfig.toml</figcaption><pre><code>[test]
+preload = [&quot;./test/setup.js&quot;]
+coverage = true
+coverageThreshold = 0.8</code></pre></figure>
+          <ul class="cs-list">
+            <li><strong>Watch for leaking mocks.</strong> By default, a module mocked in one file stayed mocked in the next one in my test. Running with <code>--isolate</code> fixed it.</li>
+            <li><strong>Move gradually.</strong> Keep Jest in CI, run <code>bun test</code> beside it, and remove Jest once both agree.</li>
+            <li><strong>Bun tests run on Bun.</strong> If production stays on Node.js, keep integration tests running on Node.js too.</li>
+          </ul>
+          <p>I checked these on Bun 1.4.4. For the rest, see Bun's <a href="https://bun.com/docs/guides/test/migrate-from-jest" rel="noopener">Jest migration guide</a>.</p>
+        </section>
+
+        <section>
+          <h2>Node.js to Bun migration checklist</h2>
           <ul class="cs-results">
             <li><span class="cs-check" aria-hidden="true">1</span><div><strong>Audit native addons</strong> and packages that rely on Node internals.</div></li>
             <li><span class="cs-check" aria-hidden="true">2</span><div><strong>Run your full test suite under Bun</strong>, then a load test with production-like traffic.</div></li>
@@ -329,6 +398,14 @@ bun server.js</code></pre></figure>
           <details>
             <summary>What usually breaks when migrating from Node.js to Bun?</summary>
             <p>Native addons, packages relying on Node internals, process management patterns like the cluster module, and observability agents. Audit those first.</p>
+          </details>
+          <details>
+            <summary>Can I migrate from Jest to bun test?</summary>
+            <p>Yes, often with a few changes. Bun's native test runner supports the Jest style of describe, test, expect, jest.fn, jest.spyOn, snapshots and fake timers. Check automocks, jest.requireActual, jest.resetModules, jsdom tests and setup files, and use --isolate if module mocks leak between files.</p>
+          </details>
+          <details>
+            <summary>Is Bun 100% compatible with Node.js?</summary>
+            <p>No. Bun implements most Node.js APIs and runs most npm packages, but native addons and packages that depend on Node.js or V8 internals can fail. Run your full test suite and a production-like load test before switching.</p>
           </details>
         </section>
 
