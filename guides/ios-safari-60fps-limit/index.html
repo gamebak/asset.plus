@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iOS Safari 60fps Limit: How to Get 120Hz Web Apps (with Code)</title>
+  <meta name="description" content="iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/ios-safari-60fps-limit/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/ios-safari-60fps-limit/">
+  <meta property="og:title" content="The iOS Safari 60fps limit: making web apps feel native">
+  <meta property="og:description" content="iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.">
+  <meta property="og:image" content="https://asset.plus/assets/cards/ios-safari-60fps-limit-16x9.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="The iOS Safari 60fps limit: making web apps feel native">
+  <meta name="twitter:description" content="iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.">
+  <meta name="twitter:image" content="https://asset.plus/assets/cards/ios-safari-60fps-limit-16x9.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://asset.plus/guides/ios-safari-60fps-limit/#article",
+      "headline": "The iOS Safari 60fps limit: making web apps feel native",
+      "description": "iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.",
+      "image": [
+        "https://asset.plus/assets/cards/ios-safari-60fps-limit-16x9.jpg",
+        "https://asset.plus/assets/cards/ios-safari-60fps-limit-4x3.jpg",
+        "https://asset.plus/assets/cards/ios-safari-60fps-limit-1x1.jpg"
+      ],
+      "datePublished": "2026-11-25T15:00:00+02:00",
+      "dateModified": "2026-11-25T15:00:00+02:00",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/ios-safari-60fps-limit/",
+      "about": [
+        "iOS Safari",
+        "60fps limit",
+        "120Hz",
+        "ProMotion",
+        "OffscreenCanvas",
+        "Web Workers",
+        "WebKit",
+        "Web apps"
+      ],
+      "citation": "https://rida.dev/blog/bypassing-ios-safari-60-fps-limit"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "iOS Safari 60fps limit",
+          "item": "https://asset.plus/guides/ios-safari-60fps-limit/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why is Safari limited to 60fps on iPhone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WebKit limits page updates to about 60 per second to save power and because some pages misbehave when animation callbacks run faster. The limit applies even on 120Hz ProMotion screens."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can a web app run at 120fps on iOS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Parts of it can. Scrolling isn't held to the page's 60fps, and a canvas drawn by a worker through OffscreenCanvas can be shown faster than the page. Normal DOM updates and requestAnimationFrame on the page stay at about 60."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does requestAnimationFrame run at 120Hz in Safari on iPhone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not by default. It runs at about 60 per second unless the user turns off the Prefer Page Rendering Updates near 60fps flag in Safari's settings."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does OffscreenCanvas bypass the 60fps limit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In current WebKit on iOS, yes, according to Rida F'kih's tests. Frames from an OffscreenCanvas don't wait for the page's next rendering update. It isn't a guaranteed behaviour, so a future Safari version could change it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to use in production?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use it as an enhancement for one interaction, with a fallback, keyboard access and testing on real devices. Don't make the whole app depend on it."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">iOS Safari 60fps limit</span>
+          </nav>
+          <p class="eyebrow">Guide · Web performance</p>
+          <h1>The iOS Safari 60fps limit: making web apps feel native</h1>
+          <p class="cs-lead">I always hated that the web apps I coded <strong>didn't feel like native apps</strong>. The layout could be perfect and the code fast, and something was still off the moment you dragged it with a finger. A big part of it was a limit I couldn't code around: <strong>on iPhone, Safari updates web pages at 60fps, even on a 120Hz screen</strong>.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 6 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>A limit only web developers have</h2>
+          <p>If you build native, a ProMotion iPhone gives you up to 120 frames a second. If you're strictly a web developer, you get half, on the same phone and the same screen. You can remove frameworks, shrink bundles and optimise every function, and you still hit the same wall. That's what made it a pain: <strong>it wasn't my code, so I couldn't fix it</strong>.</p>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 146" role="img" aria-labelledby="fps-t fps-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="fps-t">Frames in 100 milliseconds at 60fps and 120Hz</title><desc id="fps-d">In 100 milliseconds a 60fps page shows 6 frames, one every 16.7 ms. A 120Hz screen can show 12, one every 8.3 ms.</desc><text x="0" y="32" font-size="15" font-weight="600" style="fill:var(--text)">Safari page: 60fps</text><text x="320" y="32" font-size="15" text-anchor="end" style="fill:var(--text)">every 16.7 ms</text><rect x="0.0" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><rect x="53.3" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><rect x="106.7" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><rect x="160.0" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><rect x="213.3" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><rect x="266.7" y="44" width="50.3" height="24" rx="4" style="fill:var(--muted)"/><text x="0" y="104" font-size="15" font-weight="600" style="fill:var(--text)">Screen: 120Hz</text><text x="320" y="104" font-size="15" text-anchor="end" style="fill:var(--text)">every 8.3 ms</text><rect x="0.0" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="26.7" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="53.3" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="80.0" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="106.7" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="133.3" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="160.0" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="186.7" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="213.3" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="240.0" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="266.7" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/><rect x="293.3" y="116" width="23.7" height="24" rx="4" style="fill:var(--accent)"/></svg><figcaption>The same 100 milliseconds. The screen can show 12 frames, but the page gets 6.</figcaption></figure>
+          <p>WebKit has <a href="https://webkit.github.io/explainers/animation-frame-rate" rel="noopener">two reasons</a>: higher frame rates use more power, and some pages misbehave when their callbacks run faster than 60 times a second. Fair reasons, but the choice isn't left to the developer. There is a Safari setting, “Prefer Page Rendering Updates near 60fps”, but you can't ask your users to dig through feature flags.</p>
+        </section>
+
+        <section>
+          <h2>What changed</h2>
+          <p>Then I read Rida F'kih's <a href="https://rida.dev/blog/bypassing-ios-safari-60-fps-limit" rel="noopener">Bypassing iOS Safari’s 60 FPS Limit</a>. It shows a way around the limit with standard web APIs. This article is a follow-up: <strong>the same idea in simpler terms, with code you can copy</strong>. The discovery and every measurement mentioned here are Rida's, so read the original for live demos and for how it was found.</p>
+          <p>Rida's recording of an iPhone 18 Pro averaged 118fps during a drag, against 60fps with normal pointer events.</p>
+        </section>
+
+        <section>
+          <h2>The idea in simple terms</h2>
+          <p>There are two limits, and you need to get past both:</p>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th></th><th>The limit</th><th>The way around</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Output</strong></td><td>What the page draws appears at 60fps</td><td>Draw on an <code>OffscreenCanvas</code> in a worker</td></tr>
+                <tr><td><strong>Input</strong></td><td>Touch events on a normal page arrive at 60Hz</td><td>Put an invisible scrolling area under the finger</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Think of the page as a bus that leaves 60 times a second. Everything you change in the DOM waits for the next bus. A canvas handed to a worker doesn't: in WebKit its frames can be shown <strong>without waiting for the page</strong>.</p>
+          <p>Scrolling was never on that bus. Safari moves scrolled content outside your JavaScript, which is why scrolling feels native on even a slow website. So we let the finger <em>scroll something invisible</em>, and use that movement for our own interface.</p>
+        </section>
+
+        <section>
+          <h2>Step 1: the HTML and CSS</h2>
+          <p>A canvas to draw on, and a scrolling area on top of it. The inner element is much larger than the area, so it can scroll in every direction:</p>
+          <figure class="cs-code"><figcaption>HTML</figcaption><pre><code>&lt;div class=&quot;demo&quot;&gt;
+  &lt;canvas id=&quot;stage&quot; aria-hidden=&quot;true&quot;&gt;&lt;/canvas&gt;
+  &lt;div id=&quot;controller&quot; tabindex=&quot;0&quot; role=&quot;group&quot;
+       aria-label=&quot;Move the square: drag it or use the arrow keys&quot;&gt;
+    &lt;div class=&quot;surface&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></figure>
+          <figure class="cs-code"><figcaption>CSS</figcaption><pre><code>.demo { position: relative; height: 320px; }
+#stage { width: 100%; height: 100%; }
+
+#controller {
+  position: absolute;
+  inset: 0;
+  overflow: scroll;
+  overscroll-behavior: contain; /* don&#x27;t scroll the page */
+  scrollbar-width: none;
+}
+#controller::-webkit-scrollbar { display: none; }
+.surface { width: 4000px; height: 4000px; }</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>Step 2: draw outside the page</h2>
+          <p><code>transferControlToOffscreen()</code> hands the canvas to a worker. From then on, the page only sends small messages:</p>
+          <figure class="cs-code"><figcaption>JavaScript · main.js</figcaption><pre><code>const canvas = document.querySelector(&quot;#stage&quot;);
+const { width, height } = canvas.getBoundingClientRect();
+const scale = window.devicePixelRatio || 1;
+canvas.width = Math.round(width * scale);
+canvas.height = Math.round(height * scale);
+
+const worker = new Worker(&quot;/worker.js&quot;);
+const offscreen = canvas.transferControlToOffscreen();
+worker.postMessage({ type: &quot;init&quot;, canvas: offscreen, width, height, scale }, [offscreen]);
+
+const move = (dx, dy) =&gt; worker.postMessage({ type: &quot;move&quot;, dx, dy });</code></pre></figure>
+          <p>The worker keeps the position and draws as soon as a message arrives. There's no <code>requestAnimationFrame</code> here, because we don't want to wait for a callback that may be limited to 60fps:</p>
+          <figure class="cs-code"><figcaption>JavaScript · worker.js</figcaption><pre><code>let ctx, width, height;
+let x = 40;
+let y = 40;
+const SIZE = 72;
+
+function draw() {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = &quot;#1a8fe3&quot;;
+  ctx.fillRect(x, y, SIZE, SIZE);
+}
+
+self.onmessage = ({ data }) =&gt; {
+  if (data.type === &quot;init&quot;) {
+    ({ width, height } = data);
+    ctx = data.canvas.getContext(&quot;2d&quot;);
+    ctx.scale(data.scale, data.scale);
+  } else {
+    // move, but stay inside the canvas
+    x = Math.max(0, Math.min(width - SIZE, x + data.dx));
+    y = Math.max(0, Math.min(height - SIZE, y + data.dy));
+  }
+  draw(); // new input arrived: draw now, don&#x27;t wait for a frame callback
+};</code></pre></figure>
+        </section>
+
+        <section>
+          <h2>Step 3: read the finger faster</h2>
+          <p>On iPhone, a passive <code>touchmove</code> listener on a scrolling area fires at the full 120Hz, according to Rida's tests. Passive means we promise not to block the scroll, so Safari doesn't have to wait for us:</p>
+          <figure class="cs-code"><figcaption>JavaScript · main.js, continued</figcaption><pre><code>const pad = document.querySelector(&quot;#controller&quot;);
+const iosTouch = &quot;GestureEvent&quot; in window &amp;&amp; navigator.maxTouchPoints &gt; 0;
+let last = null;
+
+const track = (point) =&gt; {
+  if (last) move(point.clientX - last.x, point.clientY - last.y);
+  last = { x: point.clientX, y: point.clientY };
+};
+const stop = () =&gt; { last = null; };
+
+if (iosTouch) {
+  const passive = { passive: true };
+  const centre = () =&gt; pad.scrollTo(pad.scrollWidth / 2, pad.scrollHeight / 2);
+  centre();
+  pad.addEventListener(&quot;touchstart&quot;, (e) =&gt; { centre(); stop(); track(e.touches[0]); }, passive);
+  pad.addEventListener(&quot;touchmove&quot;, (e) =&gt; track(e.touches[0]), passive);
+  pad.addEventListener(&quot;touchend&quot;, stop, passive);
+  pad.addEventListener(&quot;touchcancel&quot;, stop, passive);
+} else {
+  // other browsers: normal pointer events are fine
+  pad.style.touchAction = &quot;none&quot;;
+  pad.style.overflow = &quot;hidden&quot;;
+  pad.addEventListener(&quot;pointerdown&quot;, (e) =&gt; { pad.setPointerCapture(e.pointerId); stop(); track(e); });
+  pad.addEventListener(&quot;pointermove&quot;, (e) =&gt; { if (last) track(e); });
+  pad.addEventListener(&quot;pointerup&quot;, stop);
+  pad.addEventListener(&quot;pointercancel&quot;, stop);
+}
+
+// dragging can&#x27;t be the only way to use it
+const arrows = { ArrowLeft: [-10, 0], ArrowRight: [10, 0], ArrowUp: [0, -10], ArrowDown: [0, 10] };
+pad.addEventListener(&quot;keydown&quot;, (e) =&gt; {
+  if (!arrows[e.key]) return;
+  e.preventDefault();
+  move(...arrows[e.key]);
+});</code></pre></figure>
+          <p>We ignore how far the area scrolled and use only how far the finger moved. The other browsers get normal pointer events, and the arrow keys work everywhere.</p>
+        </section>
+
+        <section>
+          <h2>Optional: native momentum</h2>
+          <p>The version above stops when the finger lifts. Native apps keep moving and slow down. Writing that physics yourself never feels quite right, but the invisible area already has it. You only have to <strong>read its scroll position often enough</strong>.</p>
+          <p>Scroll events are too slow: Rida measured 5 to 26 a second during momentum. This simplified version of the approach reads the position about 120 times a second, and stops when nothing moves:</p>
+          <figure class="cs-code"><figcaption>JavaScript · momentum.js</figcaption><pre><code>function watchScroll(scroller, onMove) {
+  const STEP = 1000 / 120;
+  const IDLE_MS = 200;
+  const { port1, port2 } = new MessageChannel();
+  let running = false;
+  let vsync = 0;
+  let changedAt = 0;
+  let left = scroller.scrollLeft;
+  let top = scroller.scrollTop;
+
+  // keeps Safari sending positions, and tells us when frames start
+  const frame = (time) =&gt; {
+    vsync = time;
+    if (running) requestAnimationFrame(frame);
+  };
+
+  const read = () =&gt; {
+    const now = performance.now();
+    const dx = scroller.scrollLeft - left;
+    const dy = scroller.scrollTop - top;
+    if (dx || dy) {
+      left += dx;
+      top += dy;
+      changedAt = now;
+      onMove(-dx, -dy); // content scrolls the opposite way to its offset
+    }
+    if (now - changedAt &gt; IDLE_MS) running = false; // stop, save battery
+    else port2.postMessage(null);
+  };
+
+  port1.onmessage = () =&gt; {
+    const now = performance.now();
+    const next = vsync + (Math.floor((now - vsync) / STEP) + 1) * STEP;
+    setTimeout(read, next - now);
+  };
+
+  const wake = () =&gt; {
+    changedAt = performance.now();
+    if (running) return;
+    running = true;
+    vsync = changedAt;
+    requestAnimationFrame(frame);
+    read();
+  };
+
+  scroller.addEventListener(&quot;touchstart&quot;, wake, { passive: true });
+  scroller.addEventListener(&quot;scroll&quot;, wake, { passive: true });
+}</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript</figcaption><pre><code>// use this instead of the touch listeners from step 3
+watchScroll(pad, move);</code></pre></figure>
+          <p>Reading 120 times a second doesn't mean getting 120 new positions. In Rida's tests, a loop like this reached about 90. Getting to 120 took a GPU-accelerated CSS animation plus a tiny hidden scroller to push the screen to its full rate, and the <a href="https://rida.dev/blog/bypassing-ios-safari-60-fps-limit" rel="noopener">original article</a> explains why. A real version also has to recentre the area before it reaches an edge.</p>
+        </section>
+
+        <section>
+          <h2>When I would use it</h2>
+          <ul class="cs-list">
+            <li><strong>Good fit:</strong> drawing tools, games, maps, sliders, dials, and one or two gestures people use all day.</li>
+            <li><strong>Not needed:</strong> normal scrolling, and simple movement that CSS animations already handle.</li>
+            <li><strong>Bad fit:</strong> a whole app. Text in a canvas isn't selectable, searchable or readable by a screen reader unless you build that separately.</li>
+            <li><strong>Draw only when something changes.</strong> More frames use more battery, so nothing should run while the screen is idle.</li>
+            <li><strong>Keep a plain version.</strong> If <code>transferControlToOffscreen</code> is missing, fall back to a normal canvas or to the DOM.</li>
+            <li><strong>Expect it to change.</strong> It depends on how WebKit works today, and Apple could make those frames wait for the page again. Rida wouldn't rebuild a whole application around it, and neither would I.</li>
+          </ul>
+          <p>Treat the code as a starting point and test it on real ProMotion devices. Low Power Mode and Limit Frame Rate (Settings, Accessibility, Motion) both lower the frame rate, and the iOS simulator won't show you 120Hz.</p>
+        </section>
+
+        <section>
+          <h2>Will the web ever feel native?</h2>
+          <p>I don't think frame rate is the only difference, but it's the one you feel without knowing why. For years the answer was “build a native app”. Now a small part of the interface, the part under the finger, can run at the speed of the screen, with nothing but web code. The best outcome would be for Apple to lift the limit and make this article useless.</p>
+        </section>
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>Why is Safari limited to 60fps on iPhone?</summary>
+            <p>WebKit limits page updates to about 60 per second to save power and because some pages misbehave when animation callbacks run faster. The limit applies even on 120Hz ProMotion screens.</p>
+          </details>
+          <details>
+            <summary>Can a web app run at 120fps on iOS?</summary>
+            <p>Parts of it can. Scrolling isn't held to the page's 60fps, and a canvas drawn by a worker through OffscreenCanvas can be shown faster than the page. Normal DOM updates and requestAnimationFrame on the page stay at about 60.</p>
+          </details>
+          <details>
+            <summary>Does requestAnimationFrame run at 120Hz in Safari on iPhone?</summary>
+            <p>Not by default. It runs at about 60 per second unless the user turns off the Prefer Page Rendering Updates near 60fps flag in Safari's settings.</p>
+          </details>
+          <details>
+            <summary>Does OffscreenCanvas bypass the 60fps limit?</summary>
+            <p>In current WebKit on iOS, yes, according to Rida F'kih's tests. Frames from an OffscreenCanvas don't wait for the page's next rendering update. It isn't a guaranteed behaviour, so a future Safari version could change it.</p>
+          </details>
+          <details>
+            <summary>Is it safe to use in production?</summary>
+            <p>Use it as an enhancement for one interaction, with a fallback, keyboard access and testing on real devices. Don't make the whole app depend on it.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Want your web app to feel native?</h2>
+            <p>I build and speed up web apps, from the first load to the way they respond under a finger. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><strong>OPFS vs IndexedDB: a benchmark you can run yourself</strong></a><a class="card rel-card" href="/guides/github-pages-cache-busting/"><span class="rel-kicker">Web performance</span><strong>GitHub Pages cache: why your update doesn't show</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>
