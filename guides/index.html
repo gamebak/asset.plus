@@ -49,6 +49,31 @@
       "hasPart": [
         {
           "@type": "Article",
+          "url": "https://asset.plus/guides/ios-safari-60fps-limit/",
+          "headline": "The iOS Safari 60fps limit: making web apps feel native"
+        },
+        {
+          "@type": "Article",
+          "url": "https://asset.plus/guides/github-pages-cache-busting/",
+          "headline": "GitHub Pages cache: why your update doesn't show"
+        },
+        {
+          "@type": "Article",
+          "url": "https://asset.plus/guides/bun-memory-usage-profiling/",
+          "headline": "Bun memory usage: find leaks and slow code with profiling"
+        },
+        {
+          "@type": "Article",
+          "url": "https://asset.plus/guides/localstorage-done-right/",
+          "headline": "localStorage done right: a safe 30-line wrapper"
+        },
+        {
+          "@type": "Article",
+          "url": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/",
+          "headline": "OPFS vs IndexedDB: a benchmark you can run yourself"
+        },
+        {
+          "@type": "Article",
           "url": "https://asset.plus/guides/mcp-server-nodejs-internal-tools/",
           "headline": "Build an MCP server in Node.js for your internal tools"
         },
@@ -64,11 +89,6 @@
         },
         {
           "@type": "Article",
-          "url": "https://asset.plus/guides/bun-memory-usage-profiling/",
-          "headline": "Bun memory usage: find leaks and slow code with profiling"
-        },
-        {
-          "@type": "Article",
           "url": "https://asset.plus/guides/aws-lambda-cost-optimization-rust-arm64/",
           "headline": "AWS Lambda cost optimization: Node.js, Rust and arm64"
         },
@@ -76,26 +96,6 @@
           "@type": "Article",
           "url": "https://asset.plus/guides/trading-bot-architecture-testing/",
           "headline": "Trading bot architecture: low latency, backtesting and testing"
-        },
-        {
-          "@type": "Article",
-          "url": "https://asset.plus/guides/ios-safari-60fps-limit/",
-          "headline": "The iOS Safari 60fps limit: making web apps feel native"
-        },
-        {
-          "@type": "Article",
-          "url": "https://asset.plus/guides/github-pages-cache-busting/",
-          "headline": "GitHub Pages cache: why your update doesn't show"
-        },
-        {
-          "@type": "Article",
-          "url": "https://asset.plus/guides/localstorage-done-right/",
-          "headline": "localStorage done right: a safe 30-line wrapper"
-        },
-        {
-          "@type": "Article",
-          "url": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/",
-          "headline": "OPFS vs IndexedDB: a benchmark you can run yourself"
         }
       ]
     },
@@ -185,16 +185,16 @@
     <section class="section">
       <div class="container">
         <div class="grid-3 guide-grid">
+          <a class="card guide-card" href="/guides/ios-safari-60fps-limit/"><span class="rel-kicker">Web performance</span><h2>The iOS Safari 60fps limit: making web apps feel native</h2><p>iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.</p><span class="card-link">Read guide →</span></a>
+          <a class="card guide-card" href="/guides/github-pages-cache-busting/"><span class="rel-kicker">Web performance</span><h2>GitHub Pages cache: why your update doesn't show</h2><p>GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.</p><span class="card-link">Read guide →</span></a>
+          <a class="card guide-card" href="/guides/bun-memory-usage-profiling/"><span class="rel-kicker">Runtimes</span><h2>Bun memory usage: find leaks and slow code with profiling</h2><p>How to check Bun memory usage and performance: RSS vs heap, CPU flamegraphs, heap snapshots, finding leaks, and common practices for production.</p><span class="card-link">Read guide →</span></a>
+          <a class="card guide-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><h2>localStorage done right: a safe 30-line wrapper</h2><p>Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.</p><span class="card-link">Read guide →</span></a>
+          <a class="card guide-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><h2>OPFS vs IndexedDB: a benchmark you can run yourself</h2><p>OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/guides/mcp-server-nodejs-internal-tools/"><span class="rel-kicker">AI agents & MCP</span><h2>Build an MCP server in Node.js for internal tools</h2><p>How to build a secure MCP server in Node.js that connects Claude or a self-hosted LLM (Ollama, llama.cpp) to your internal tools, APIs and data.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><h2>Less code = more: reducing npm dependencies</h2><p>A practical guide to cutting npm dependencies in Node.js and front-end apps: audit, replace packages with native APIs, and lower supply-chain risk in the AI era.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/guides/bun-vs-nodejs-production/"><span class="rel-kicker">Runtimes</span><h2>Bun vs Node.js in production: when I choose each</h2><p>Bun vs Node.js in production: performance, npm compatibility, Jest to bun test migration, and a checklist to decide if Bun is production ready for you.</p><span class="card-link">Read guide →</span></a>
-          <a class="card guide-card" href="/guides/bun-memory-usage-profiling/"><span class="rel-kicker">Runtimes</span><h2>Bun memory usage: find leaks and slow code with profiling</h2><p>How to check Bun memory usage and performance: RSS vs heap, CPU flamegraphs, heap snapshots, finding leaks, and common practices for production.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/guides/aws-lambda-cost-optimization-rust-arm64/"><span class="rel-kicker">Serverless & AWS</span><h2>AWS Lambda cost optimization: Node.js, Rust and arm64</h2><p>Cut AWS Lambda costs: switch to arm64 (Graviton), right-size memory, slim Node.js bundles, and move hot paths to Rust for faster cold starts and lower bills.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/guides/trading-bot-architecture-testing/"><span class="rel-kicker">Algorithmic trading</span><h2>Trading bot architecture: low latency and testing</h2><p>How I took trading bots from Node.js to async Rust to TCP-level tuning, with the architecture, testing and risk controls that keep low-latency bots safe.</p><span class="card-link">Read guide →</span></a>
-          <a class="card guide-card" href="/guides/ios-safari-60fps-limit/"><span class="rel-kicker">Web performance</span><h2>The iOS Safari 60fps limit: making web apps feel native</h2><p>iOS Safari holds web pages to 60fps on 120Hz iPhones. Why web apps feel less native, and how to get around it with OffscreenCanvas, with sample code.</p><span class="card-link">Read guide →</span></a>
-          <a class="card guide-card" href="/guides/github-pages-cache-busting/"><span class="rel-kicker">Web performance</span><h2>GitHub Pages cache: why your update doesn't show</h2><p>GitHub Pages caches files for 10 minutes. Why CSS and JS updates don't show after a deploy, how to check, and a small cache-busting script to fix it.</p><span class="card-link">Read guide →</span></a>
-          <a class="card guide-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><h2>localStorage done right: a safe 30-line wrapper</h2><p>Use localStorage safely: a dependency-free wrapper with expiration, versioning, quota-error handling and cross-tab sync, plus when to switch to IndexedDB.</p><span class="card-link">Read guide →</span></a>
-          <a class="card guide-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><h2>OPFS vs IndexedDB: a benchmark you can run yourself</h2><p>OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.</p><span class="card-link">Read guide →</span></a>
           <a class="card guide-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><h2>Private AI translation with self-hosted LLMs</h2><p>Ollama, llama.cpp, Node.js, Vue 3 and AWS: AI translation where documents never leave your infrastructure.</p><span class="card-link">Read case study →</span></a>
         </div>
       </div>
