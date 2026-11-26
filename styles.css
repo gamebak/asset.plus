@@ -313,7 +313,7 @@ img { display: block; max-width: 100%; height: auto; }
   filter: url(#rgb-split);
   animation: photo-print 2.2s steps(44, end) forwards;
 }
-.js .photo-frame.printed img { clip-path: none; filter: none; animation: none; }
+.js .photo-frame.printed img { clip-path: none; filter: url(#rgb-split); animation: none; }
 @keyframes photo-print { to { clip-path: inset(0 0 0 0); } }
 
 .photo-head {
@@ -363,8 +363,8 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .photo-status.show { opacity: 1; }
 
-/* hover: brief CRT colour fringe */
-.photo-frame.printed:hover img { filter: url(#rgb-split); }
+/* CRT colour fringe stays on; hovering shows the clean photo */
+.js .photo-frame.printed:hover img { filter: none; }
 
 /* ── Sections ───────────────────────────────────────────────────── */
 .section { padding: 96px 0; }

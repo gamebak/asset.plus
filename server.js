@@ -70,5 +70,12 @@ http.createServer((req, res) => {
     send(res, 200, file);
   });
 }).listen(PORT, HOST, () => {
-  console.log(`http://localhost:${PORT}`);
+  const address = `http://localhost:${PORT}`;
+  console.log(address);
+  // Open the site in Chrome (macOS). Skip with NO_OPEN=1 bun dev
+  if (process.platform === 'darwin' && !process.env.NO_OPEN) {
+    require('child_process').execFile('open', ['-a', 'Google Chrome', address], (err) => {
+      if (err) console.log('Could not open Chrome:', err.message);
+    });
+  }
 });
