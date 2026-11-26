@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OPFS vs IndexedDB: Performance Benchmark You Can Run Yourself</title>
-  <meta name="description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <title>OPFS vs IndexedDB Benchmark: Chrome, Firefox and Safari Results</title>
+  <meta name="description" content="OPFS vs IndexedDB benchmarked in Chrome, Firefox and Safari: OPFS saves 50 MB 5–10× faster, IndexedDB changes one record up to 600× faster. Run the test yourself.">
   <meta name="author" content="Alexandru Cobuz">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://asset.plus/guides/opfs-vs-indexeddb-benchmark/">
@@ -17,16 +17,16 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Asset.plus">
   <meta property="og:url" content="https://asset.plus/guides/opfs-vs-indexeddb-benchmark/">
-  <meta property="og:title" content="OPFS vs IndexedDB: a benchmark you can run yourself">
-  <meta property="og:description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <meta property="og:title" content="OPFS vs IndexedDB Benchmark: Chrome, Firefox and Safari Results">
+  <meta property="og:description" content="OPFS vs IndexedDB benchmarked in Chrome, Firefox and Safari: OPFS saves 50 MB 5–10× faster, IndexedDB changes one record up to 600× faster. Run the test yourself.">
   <meta property="og:image" content="https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-16x9.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="675">
   <meta property="og:image:alt" content="Cover image for “OPFS vs IndexedDB: a benchmark you can run yourself”">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@CobuzAlexandru">
-  <meta name="twitter:title" content="OPFS vs IndexedDB: a benchmark you can run yourself">
-  <meta name="twitter:description" content="OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.">
+  <meta name="twitter:title" content="OPFS vs IndexedDB Benchmark: Chrome, Firefox and Safari Results">
+  <meta name="twitter:description" content="OPFS vs IndexedDB benchmarked in Chrome, Firefox and Safari: OPFS saves 50 MB 5–10× faster, IndexedDB changes one record up to 600× faster. Run the test yourself.">
   <meta name="twitter:image" content="https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-16x9.jpg">
   <meta name="twitter:image:alt" content="Cover image for “OPFS vs IndexedDB: a benchmark you can run yourself”">
 
@@ -44,14 +44,14 @@
       "@type": "Article",
       "@id": "https://asset.plus/guides/opfs-vs-indexeddb-benchmark/#article",
       "headline": "OPFS vs IndexedDB: a benchmark you can run yourself",
-      "description": "OPFS vs IndexedDB for heavy browser storage: how they differ, when to use each, and a live benchmark that measures both in your own browser.",
+      "description": "OPFS vs IndexedDB benchmarked in Chrome, Firefox and Safari: OPFS saves 50 MB 5–10× faster, IndexedDB changes one record up to 600× faster. Run the test yourself.",
       "image": [
         "https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-16x9.jpg",
         "https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-4x3.jpg",
         "https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-1x1.jpg"
       ],
       "datePublished": "2026-11-22T09:00:00+02:00",
-      "dateModified": "2026-11-22T09:00:00+02:00",
+      "dateModified": "2026-11-26T09:00:00+02:00",
       "author": {
         "@id": "https://asset.plus/#person"
       },
@@ -66,7 +66,10 @@
         "Web Workers",
         "Browser storage",
         "Performance benchmark",
-        "Offline-first"
+        "Offline-first",
+        "Safari",
+        "Performance",
+        "SQLite WASM"
       ]
     },
     {
@@ -112,7 +115,7 @@
           "name": "Is OPFS faster than IndexedDB?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Often, for large binary or file-like data, especially through a Web Worker with a synchronous access handle. But results vary a lot by browser, device and access pattern. Run the benchmark on this page in the browsers your users actually use."
+            "text": "For saving large data in one go, yes. On an M1 MacBook Air, OPFS saved 50 MB 5–10× faster than IndexedDB in Chrome, Firefox and Safari. For changing a single record, no: IndexedDB took under 5 ms, while rewriting a 50 MB OPFS file took 134–320 ms. Reading everything back was 3× faster with OPFS in Chrome and the same speed in Safari."
           }
         },
         {
@@ -120,7 +123,23 @@
           "name": "When should I use IndexedDB instead of OPFS?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Use IndexedDB for structured records you need to look up, filter or index, such as offline app data, caches and queues. Use OPFS for files and large binary blobs you read and write as a whole or in chunks, like media, exports, or a WebAssembly database file."
+            "text": "Use IndexedDB for structured records you need to look up, filter, index or update often, such as offline app data, caches and sync queues. Use OPFS for files and large binary data you read and write as a whole or in chunks, like media, exports, logs or a SQLite database file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is OPFS good for data that changes often?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only if you design the file layout. Rewriting one big JSON file for every change is slow, and gets slower as the file grows. Storing records in fixed-size slots at known positions, written with a sync access handle in a Web Worker, made single-record changes take about 1 ms, as fast as IndexedDB. SQLite on OPFS works the same way, with fixed-size pages."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is my IndexedDB so slow?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Usually because every write has its own transaction. In Safari on an M1, saving 1,000 records in separate transactions took 478 ms, against 34 ms in one transaction. Chrome and Firefox were about 3× slower. Batch writes into one transaction, and do heavy work in a Web Worker."
           }
         },
         {
@@ -144,7 +163,7 @@
           "name": "Does this benchmark send my data anywhere?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. It generates dummy data, writes and reads it locally in your browser, then deletes it. Nothing leaves your device."
+            "text": "No. It generates random dummy data, saves and reads it locally in your browser, then deletes it. Nothing leaves your device."
           }
         }
       ]
@@ -203,12 +222,22 @@
           </nav>
           <p class="eyebrow">Guide · Browser storage</p>
           <h1>OPFS vs IndexedDB: a benchmark you can run yourself</h1>
-          <p class="cs-lead">For heavy lifting in the browser, such as offline data, large datasets or files, you have two real options: <strong>IndexedDB</strong> and the <strong>Origin Private File System (OPFS)</strong>. Most published benchmarks come from vendors. This one runs <strong>in your browser, on your device</strong>, right on this page.</p>
-          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 7 min read</p>
+          <p class="cs-lead">For heavy lifting in the browser, such as offline data, large datasets or files, you have two real options: <strong>IndexedDB</strong> and the <strong>Origin Private File System (OPFS)</strong>. Most published benchmarks come from vendors. I ran my own on an M1 MacBook Air in <strong>Chrome, Firefox and Safari</strong>, and you can run the same test <strong>in your browser</strong>, right on this page.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 10 min read · Updated <time datetime="2026-11-26">26 Nov 2026</time></p>
         </div>
       </header>
 
       <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>The short answer</h2>
+          <ul class="cs-list">
+            <li><strong>Saving a large dataset in one go:</strong> OPFS wins. It was 5–10× faster than IndexedDB in Chrome, Firefox and Safari.</li>
+            <li><strong>Changing one record:</strong> IndexedDB wins by far. It took under 5 ms, while rewriting a 50 MB OPFS file took 134–320 ms.</li>
+            <li><strong>Reading everything back:</strong> it depends on the browser. OPFS was 3× faster in Chrome, slightly faster in Firefox, and level with IndexedDB in Safari.</li>
+            <li><strong>OPFS can match IndexedDB on small updates,</strong> but only if you store records at fixed positions in the file instead of as one big JSON blob.</li>
+          </ul>
+        </section>
 
         <section>
           <h2>Two very different tools</h2>
@@ -225,12 +254,66 @@
               </tbody>
             </table>
           </div>
+          <p>The difference in data model explains almost every result below. IndexedDB knows where each record lives, so it can change one without touching the rest. OPFS only knows bytes. If you save your data as one JSON file, OPFS has no idea where record 5 is, so a change means reading, parsing and rewriting the whole file.</p>
           <p>Coming from localStorage? Start with <a href="/guides/localstorage-done-right/">when localStorage is enough</a>.</p>
         </section>
 
         <section>
-          <h2>Run the benchmark</h2>
-          <p>It generates dummy records, writes and reads them with each API, and deletes everything afterwards. Nothing leaves your device.</p>
+          <h2>Results on an M1 MacBook Air</h2>
+          <p>I ran an extended version of the benchmark on my own MacBook Air (M1, 8 GB) in Chrome, Firefox and Safari. Each test ran five times after a warm-up run, and the charts show the median. Everything ran inside a Web Worker, so every storage type had the same conditions.</p>
+          <p>To keep it fair, the records hold random text, which can't be compressed, and the time to convert data to and from JSON counts for OPFS too. IndexedDB does that conversion itself, so leaving it out for OPFS would flatter OPFS.</p>
+          <h3>Saving 50 MB: OPFS is 5–10× faster</h3>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 218" role="img" aria-labelledby="save-t save-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="save-t">Saving 50 MB: IndexedDB vs OPFS</title><desc id="save-d">Time to save 10,000 records of 5 KB on an M1 MacBook Air. Chrome: IndexedDB 926 ms, OPFS 202 ms. Firefox: IndexedDB 617 ms, OPFS 64 ms. Safari: IndexedDB 747 ms, OPFS 94 ms.</desc><rect x="0" y="3" width="11" height="11" rx="3" style="fill:var(--muted)"/><text x="17" y="13" font-size="13" style="fill:var(--text)">IndexedDB</text><rect x="100" y="3" width="11" height="11" rx="3" style="fill:var(--accent)"/><text x="117" y="13" font-size="13" style="fill:var(--text)">OPFS (one file)</text><text x="0" y="48" font-size="14" font-weight="600" style="fill:var(--text)">Chrome</text><rect x="0" y="56" width="240" height="13" rx="3" style="fill:var(--muted)"><title>Chrome · IndexedDB: 926 ms</title></rect><text x="246" y="67" font-size="12" style="fill:var(--text)">926 ms</text><rect x="0" y="73" width="52.4" height="13" rx="3" style="fill:var(--accent)"><title>Chrome · OPFS: 202 ms</title></rect><text x="58" y="84" font-size="12" style="fill:var(--text)">202 ms</text><text x="0" y="112" font-size="14" font-weight="600" style="fill:var(--text)">Firefox</text><rect x="0" y="120" width="159.9" height="13" rx="3" style="fill:var(--muted)"><title>Firefox · IndexedDB: 617 ms</title></rect><text x="166" y="131" font-size="12" style="fill:var(--text)">617 ms</text><rect x="0" y="137" width="16.6" height="13" rx="3" style="fill:var(--accent)"><title>Firefox · OPFS: 64 ms</title></rect><text x="23" y="148" font-size="12" style="fill:var(--text)">64 ms</text><text x="0" y="176" font-size="14" font-weight="600" style="fill:var(--text)">Safari</text><rect x="0" y="184" width="193.6" height="13" rx="3" style="fill:var(--muted)"><title>Safari · IndexedDB: 747 ms</title></rect><text x="200" y="195" font-size="12" style="fill:var(--text)">747 ms</text><rect x="0" y="201" width="24.4" height="13" rx="3" style="fill:var(--accent)"><title>Safari · OPFS: 94 ms</title></rect><text x="30" y="212" font-size="12" style="fill:var(--text)">94 ms</text></svg><figcaption>10,000 records × 5 KB, median of 5 runs. Shorter is faster.</figcaption></figure>
+          <p>IndexedDB stores each record separately and maintains its index as it goes. OPFS just writes one long run of bytes. For "save everything now", like an export, a backup or a downloaded dataset, OPFS is clearly faster in every browser.</p>
+          <h3>Changing one record: IndexedDB is up to 600× faster</h3>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 218" role="img" aria-labelledby="upd-t upd-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="upd-t">Changing one record in 50 MB: IndexedDB vs OPFS</title><desc id="upd-d">Time to change one record in a 50 MB dataset on an M1 MacBook Air. Chrome: IndexedDB 0.3 ms, OPFS one file 199 ms. Firefox: IndexedDB 5 ms, OPFS 134 ms. Safari: IndexedDB 4 ms, OPFS 320 ms.</desc><rect x="0" y="3" width="11" height="11" rx="3" style="fill:var(--muted)"/><text x="17" y="13" font-size="13" style="fill:var(--text)">IndexedDB</text><rect x="100" y="3" width="11" height="11" rx="3" style="fill:var(--accent)"/><text x="117" y="13" font-size="13" style="fill:var(--text)">OPFS (one file)</text><text x="0" y="48" font-size="14" font-weight="600" style="fill:var(--text)">Chrome</text><rect x="0" y="56" width="2" height="13" rx="1" style="fill:var(--muted)"><title>Chrome · IndexedDB: 0.3 ms</title></rect><text x="8" y="67" font-size="12" style="fill:var(--text)">0.3 ms</text><rect x="0" y="73" width="149.3" height="13" rx="3" style="fill:var(--accent)"><title>Chrome · OPFS: 199 ms</title></rect><text x="155" y="84" font-size="12" style="fill:var(--text)">199 ms</text><text x="0" y="112" font-size="14" font-weight="600" style="fill:var(--text)">Firefox</text><rect x="0" y="120" width="3.8" height="13" rx="1" style="fill:var(--muted)"><title>Firefox · IndexedDB: 5 ms</title></rect><text x="10" y="131" font-size="12" style="fill:var(--text)">5 ms</text><rect x="0" y="137" width="100.5" height="13" rx="3" style="fill:var(--accent)"><title>Firefox · OPFS: 134 ms</title></rect><text x="107" y="148" font-size="12" style="fill:var(--text)">134 ms</text><text x="0" y="176" font-size="14" font-weight="600" style="fill:var(--text)">Safari</text><rect x="0" y="184" width="3" height="13" rx="1" style="fill:var(--muted)"><title>Safari · IndexedDB: 4 ms</title></rect><text x="9" y="195" font-size="12" style="fill:var(--text)">4 ms</text><rect x="0" y="201" width="240" height="13" rx="3" style="fill:var(--accent)"><title>Safari · OPFS: 320 ms</title></rect><text x="246" y="212" font-size="12" style="fill:var(--text)">320 ms</text></svg><figcaption>One record changed in 10,000 × 5 KB. For OPFS, the whole JSON file is read, changed and written back. Median of 5 runs.</figcaption></figure>
+          <p>This is the result that should decide most projects. If your app changes data often, such as a to-do list, a form draft or a sync queue, a single OPFS file has to be rewritten on every change, and the cost grows with the size of the file. IndexedDB only touches the one record, so the size of everything else doesn't matter.</p>
+          <p>OPFS isn't stuck with this. When each record has a fixed size and a known position in the file, a change is one small write at that position. That took about 1 ms in every browser, as fast as IndexedDB. The code is in the Web Worker section below.</p>
+          <h3>All results</h3>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Test (50 MB)</th><th>Chrome 158</th><th>Firefox 160</th><th>Safari 26.6</th></tr></thead>
+              <tbody>
+                <tr><td>Save all · IndexedDB</td><td>926 ms</td><td>617 ms</td><td>747 ms</td></tr>
+                <tr><td>Save all · OPFS, one file</td><td>202 ms</td><td>64 ms</td><td>94 ms</td></tr>
+                <tr><td>Read all · IndexedDB</td><td>141 ms</td><td>154 ms</td><td>140 ms</td></tr>
+                <tr><td>Read all · OPFS, one file</td><td>44 ms</td><td>106 ms</td><td>140 ms</td></tr>
+                <tr><td>Change 1 record · IndexedDB</td><td>0.3 ms</td><td>5 ms</td><td>4 ms</td></tr>
+                <tr><td>Change 1 record · OPFS, one file</td><td>199 ms</td><td>134 ms</td><td>320 ms</td></tr>
+                <tr><td>Change 1 record · OPFS, fixed-size records</td><td>1.6 ms</td><td>&lt;1 ms</td><td>1 ms</td></tr>
+                <tr><td>Read 100 random records · IndexedDB</td><td>5 ms</td><td>10 ms</td><td>5 ms</td></tr>
+                <tr><td>Read 100 random records · OPFS, fixed-size records</td><td>0.6 ms</td><td>1 ms</td><td>2 ms</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Some limits, so you read these numbers the right way:</p>
+          <ul class="cs-list">
+            <li>It's one machine. A phone, or a laptop with a slower disk, will give different numbers, so the ratios matter more than the milliseconds.</li>
+            <li>Chrome ran in headless mode, without a visible window. Firefox and Safari ran normally.</li>
+            <li>Firefox and Safari round timings to the nearest millisecond for privacy reasons, so anything under 5 ms in those columns is approximate.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Which one should you use?</h2>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Your data</th><th>Use</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>Records you look up, filter or update: offline app data, caches, sync queues</td><td>IndexedDB</td><td>Indexes, and single-record changes in milliseconds</td></tr>
+                <tr><td>Large files you save and load whole: media, exports, downloaded datasets</td><td>OPFS</td><td>5–10× faster to save, no record overhead</td></tr>
+                <tr><td>Data you mostly append to: logs, recordings, event streams</td><td>OPFS</td><td>Append at the end of the file with a sync access handle</td></tr>
+                <tr><td>A real database in the browser (SQLite compiled to WebAssembly)</td><td>OPFS</td><td>SQLite stores fixed-size pages at known positions, which is exactly what OPFS does well</td></tr>
+                <tr><td>Both: structured records plus big attachments</td><td>Both</td><td>Records and metadata in IndexedDB, file contents in OPFS, linked by an ID</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>If you're unsure, start with IndexedDB. It's the safer default for app data, and you can move the large binary parts to OPFS later, when you have numbers that show it's worth it.</p>
+        </section>
+
+        <section>
+          <h2>Run the benchmark yourself</h2>
+          <p>The test below runs in your browser, on your device. It generates random records, saves, reads and changes them three ways, takes the median of three runs and deletes everything afterwards. Nothing leaves your device.</p>
           <div class="bench card">
             <div class="bench-controls">
               <label for="bench-size">Dataset</label>
@@ -241,9 +324,9 @@
               </select>
               <button type="button" class="btn btn-primary btn-sm" id="bench-run">Run benchmark</button>
             </div>
-            <div id="bench-out" class="bench-out" aria-live="polite"><p class="bench-meta">Results appear here. Try it in a few different browsers.</p></div>
+            <div id="bench-out" class="bench-out" aria-live="polite"><p class="bench-meta">Results appear here. Try it in a few different browsers, and on your phone.</p></div>
           </div>
-          <p>It's a fair-but-simple test: IndexedDB stores the data as individual records (how you'd use it), while OPFS stores the same data as one file (how you'd use <em>it</em>). Treat the numbers as a guide for your own case, not a universal ranking.</p>
+          <p>All three tests run in a Web Worker, the same way you'd run them in a real app. "OPFS, one file" stores everything as one JSON file. "OPFS, fixed-size" gives each record its own fixed slot in a binary file.</p>
         </section>
 
         <section>
@@ -268,16 +351,52 @@ onmessage = async ({ data: { type, items } }) =&gt; {
           <figure class="cs-code"><figcaption>JavaScript · main thread</figcaption><pre><code>const worker = new Worker(&quot;/storage.worker.js&quot;);
 worker.onmessage = ({ data }) =&gt; console.log(`saved ${data.count} items`);
 worker.postMessage({ type: &quot;save&quot;, items: bigArrayOfRecords });</code></pre></figure>
+          <h3>OPFS with fixed-size records</h3>
+          <p>This is the layout that made single-record changes in OPFS as fast as IndexedDB. Each record gets a slot of exactly <code>RECORD_SIZE</code> bytes, so record 42 always starts at byte <code>42 × RECORD_SIZE</code>. The synchronous access handle only exists inside a dedicated worker:</p>
+          <figure class="cs-code"><figcaption>JavaScript · records.worker.js</figcaption><pre><code>const RECORD_SIZE = 2048; // every record gets exactly 2 KB
+const enc = new TextEncoder();
+const dec = new TextDecoder();
+
+const fileReady = (async () =&gt; {
+  const root = await navigator.storage.getDirectory();
+  const handle = await root.getFileHandle(&quot;records.bin&quot;, { create: true });
+  return handle.createSyncAccessHandle(); // one open handle per file
+})();
+
+function put(file, id, record) {
+  const json = JSON.stringify(record);
+  const slot = new Uint8Array(RECORD_SIZE); // unused bytes stay 0
+  if (enc.encodeInto(json, slot).read &lt; json.length) throw new Error(&quot;record too large&quot;);
+  file.write(slot, { at: id * RECORD_SIZE }); // overwrite only this slot
+  file.flush();
+}
+
+function get(file, id) {
+  const slot = new Uint8Array(RECORD_SIZE);
+  file.read(slot, { at: id * RECORD_SIZE });
+  const end = slot.indexOf(0);
+  if (end === 0) return null; // empty slot
+  return JSON.parse(dec.decode(slot.subarray(0, end === -1 ? RECORD_SIZE : end)));
+}
+
+onmessage = async ({ data: { type, id, record } }) =&gt; {
+  const file = await fileReady;
+  if (type === &quot;put&quot;) { put(file, id, record); postMessage({ type: &quot;saved&quot;, id }); }
+  if (type === &quot;get&quot;) postMessage({ type: &quot;record&quot;, id, record: get(file, id) });
+};</code></pre></figure>
+          <p>The trade-offs: records can't grow beyond their slot, IDs must be small numbers you control, and there are no indexes. If you need those, you're rebuilding a database, and that's when SQLite on OPFS, or plain IndexedDB, is the better choice.</p>
         </section>
 
         <section>
           <h2>Practical rules</h2>
           <ul class="cs-list">
-            <li><strong>Batch writes</strong> into one transaction. Many tiny transactions are the most common IndexedDB slowdown.</li>
+            <li><strong>Batch writes</strong> into one transaction. Saving 1,000 records with one transaction each took 478 ms in Safari, against 34 ms in a single transaction: 14× slower. Chrome and Firefox were about 3× slower. Many tiny transactions are the most common IndexedDB slowdown.</li>
+            <li><strong>Don't keep changing data in one big OPFS file.</strong> Every change rewrites the whole file. Use fixed-size slots, several smaller files, or IndexedDB.</li>
+            <li><strong>Don't count on <code>durability: "relaxed"</code>.</strong> It's meant to speed up IndexedDB writes by not waiting for the disk, but it made no measurable difference on the M1 in any browser. Measure it in your own app before relying on it.</li>
             <li><strong>Split big data into chunks</strong> instead of one giant record, so updates only rewrite what changed.</li>
             <li><strong>Prefer ArrayBuffers</strong> for binary data in IndexedDB. Blob storage has had browser-specific problems, notably on older Safari versions.</li>
             <li><strong>Ask for persistence</strong> with <code>navigator.storage.persist()</code> when losing the data would hurt.</li>
-            <li><strong>Test in every target browser.</strong> Storage performance differs more between browsers than almost anything else.</li>
+            <li><strong>Test in every target browser.</strong> Reading 50 MB from OPFS was 3× faster than IndexedDB in Chrome, but no faster at all in Safari.</li>
           </ul>
         </section>
 
@@ -286,11 +405,19 @@ worker.postMessage({ type: &quot;save&quot;, items: bigArrayOfRecords });</code>
           <h2>FAQ</h2>
           <details>
             <summary>Is OPFS faster than IndexedDB?</summary>
-            <p>Often, for large binary or file-like data, especially through a Web Worker with a synchronous access handle. But results vary a lot by browser, device and access pattern. Run the benchmark on this page in the browsers your users actually use.</p>
+            <p>For saving large data in one go, yes. On an M1 MacBook Air, OPFS saved 50 MB 5–10× faster than IndexedDB in Chrome, Firefox and Safari. For changing a single record, no: IndexedDB took under 5 ms, while rewriting a 50 MB OPFS file took 134–320 ms. Reading everything back was 3× faster with OPFS in Chrome and the same speed in Safari.</p>
           </details>
           <details>
             <summary>When should I use IndexedDB instead of OPFS?</summary>
-            <p>Use IndexedDB for structured records you need to look up, filter or index, such as offline app data, caches and queues. Use OPFS for files and large binary blobs you read and write as a whole or in chunks, like media, exports, or a WebAssembly database file.</p>
+            <p>Use IndexedDB for structured records you need to look up, filter, index or update often, such as offline app data, caches and sync queues. Use OPFS for files and large binary data you read and write as a whole or in chunks, like media, exports, logs or a SQLite database file.</p>
+          </details>
+          <details>
+            <summary>Is OPFS good for data that changes often?</summary>
+            <p>Only if you design the file layout. Rewriting one big JSON file for every change is slow, and gets slower as the file grows. Storing records in fixed-size slots at known positions, written with a sync access handle in a Web Worker, made single-record changes take about 1 ms, as fast as IndexedDB. SQLite on OPFS works the same way, with fixed-size pages.</p>
+          </details>
+          <details>
+            <summary>Why is my IndexedDB so slow?</summary>
+            <p>Usually because every write has its own transaction. In Safari on an M1, saving 1,000 records in separate transactions took 478 ms, against 34 ms in one transaction. Chrome and Firefox were about 3× slower. Batch writes into one transaction, and do heavy work in a Web Worker.</p>
           </details>
           <details>
             <summary>Do OPFS and IndexedDB work in Web Workers?</summary>
@@ -302,7 +429,7 @@ worker.postMessage({ type: &quot;save&quot;, items: bigArrayOfRecords });</code>
           </details>
           <details>
             <summary>Does this benchmark send my data anywhere?</summary>
-            <p>No. It generates dummy data, writes and reads it locally in your browser, then deletes it. Nothing leaves your device.</p>
+            <p>No. It generates random dummy data, saves and reads it locally in your browser, then deletes it. Nothing leaves your device.</p>
           </details>
         </section>
 
@@ -342,114 +469,175 @@ worker.postMessage({ type: &quot;save&quot;, items: bigArrayOfRecords });</code>
   const sizeSel = document.getElementById('bench-size');
   if (!btn) return;
 
-  const fmt = ms => ms < 10 ? ms.toFixed(2) + ' ms' : Math.round(ms) + ' ms';
-  const row = (name, write, read, note = '') =>
-    `<tr><td>${name}</td><td>${write}</td><td>${read}</td><td>${note}</td></tr>`;
+  // Medians from my M1 MacBook Air, Chrome 158, for the same datasets
+  const M1 = {
+    '5000x2048': { idb: [213, 36, 0.5], file: [24, 4.2, 31] },
+    '10000x5120': { idb: [926, 141, 0.3], file: [202, 44, 199] },
+  };
 
-  function makeRecords(count, bytes) {
-    const payload = 'x'.repeat(bytes);
-    return Array.from({ length: count }, (_, i) => ({ id: i, payload }));
-  }
+  // Runs inside a Web Worker, so all three stores get the same conditions
+  const workerSrc = String.raw`
+    const median = (a) => { const s = [...a].sort((x, y) => x - y); return s[s.length >> 1]; };
+    const req = (r) => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    const done = (tx) => new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = tx.onabort = () => rej(tx.error); });
+    const now = () => performance.now();
+    const enc = new TextEncoder(), dec = new TextDecoder();
 
-  // ── IndexedDB: N records in one transaction, then getAll ──
-  function idbOpen() {
-    return new Promise((res, rej) => {
-      const req = indexedDB.open('asset-plus-bench', 1);
-      req.onupgradeneeded = () => req.result.createObjectStore('items', { keyPath: 'id' });
-      req.onsuccess = () => res(req.result);
-      req.onerror = () => rej(req.error);
-    });
-  }
-  const done = tx => new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = tx.onabort = () => rej(tx.error); });
+    function makeRecords(n, bytes) {
+      // random hex text, so nothing can be compressed
+      const len = Math.min(n * bytes, 1 << 21) + bytes;
+      const rnd = new Uint8Array(len);
+      for (let i = 0; i < len; i += 65536) crypto.getRandomValues(rnd.subarray(i, i + 65536));
+      const hex = '0123456789abcdef', chars = new Array(len);
+      for (let i = 0; i < len; i++) chars[i] = hex[rnd[i] & 15];
+      const pool = chars.join('');
+      return Array.from({ length: n }, (_, i) => ({ id: i, payload: pool.substr((i * 7919) % (len - bytes), bytes) }));
+    }
 
-  async function benchIDB(records) {
-    const db = await idbOpen();
-    let tx = db.transaction('items', 'readwrite');
-    tx.objectStore('items').clear();
-    await done(tx);
-    const t0 = performance.now();
-    tx = db.transaction('items', 'readwrite');
-    const st = tx.objectStore('items');
-    for (const r of records) st.put(r);
-    await done(tx);
-    const t1 = performance.now();
-    const all = await new Promise((res, rej) => {
-      const req = db.transaction('items').objectStore('items').getAll();
-      req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
-    });
-    const t2 = performance.now();
-    db.close();
-    await new Promise(r => { const d = indexedDB.deleteDatabase('asset-plus-bench'); d.onsuccess = d.onerror = d.onblocked = r; });
-    if (all.length !== records.length) throw new Error('read mismatch');
-    return [t1 - t0, t2 - t1];
-  }
+    let db;
+    async function idb(recs) {
+      if (!db) {
+        const o = indexedDB.open('asset-plus-bench', 1);
+        o.onupgradeneeded = () => o.result.createObjectStore('items', { keyPath: 'id' });
+        db = await req(o);
+      }
+      let tx = db.transaction('items', 'readwrite'); tx.objectStore('items').clear(); await done(tx);
+      let t = now();
+      tx = db.transaction('items', 'readwrite'); const st = tx.objectStore('items');
+      for (const r of recs) st.put(r);
+      await done(tx);
+      const save = now() - t;
+      t = now(); const all = await req(db.transaction('items').objectStore('items').getAll()); const read = now() - t;
+      if (all.length !== recs.length) throw new Error('read mismatch');
+      t = now(); tx = db.transaction('items', 'readwrite'); tx.objectStore('items').put({ id: 5, payload: recs[6].payload }); await done(tx);
+      return [save, read, now() - t];
+    }
 
-  // ── OPFS (main thread): one file via createWritable, read via getFile ──
-  async function benchOPFS(text) {
-    const root = await navigator.storage.getDirectory();
-    const fh = await root.getFileHandle('asset-plus-bench.txt', { create: true });
-    const t0 = performance.now();
-    const w = await fh.createWritable();
-    await w.write(text);
-    await w.close();
-    const t1 = performance.now();
-    const back = await (await fh.getFile()).text();
-    const t2 = performance.now();
-    await root.removeEntry('asset-plus-bench.txt');
-    if (back.length !== text.length) throw new Error('read mismatch');
-    return [t1 - t0, t2 - t1];
-  }
+    async function handle(name) {
+      const root = await navigator.storage.getDirectory();
+      const fh = await root.getFileHandle(name, { create: true });
+      return fh.createSyncAccessHandle();
+    }
 
-  // ── OPFS (worker): synchronous access handle, the fastest path ──
-  function benchOPFSWorker(text) {
-    const src = `
-      onmessage = async (e) => {
+    async function file(recs) {
+      const h = await handle('asset-plus-bench.json');
+      try {
+        let t = now();
+        const b = enc.encode(JSON.stringify(recs)); h.truncate(0); h.write(b, { at: 0 }); h.flush();
+        const save = now() - t;
+        t = now();
+        const buf = new Uint8Array(h.getSize()); h.read(buf, { at: 0 });
+        const back = JSON.parse(dec.decode(buf));
+        const read = now() - t;
+        if (back.length !== recs.length) throw new Error('read mismatch');
+        t = now(); // change one record: read, parse, change, write it all back
+        const buf2 = new Uint8Array(h.getSize()); h.read(buf2, { at: 0 });
+        const arr = JSON.parse(dec.decode(buf2)); arr[5].payload = recs[6].payload;
+        const e = enc.encode(JSON.stringify(arr)); h.truncate(0); h.write(e, { at: 0 }); h.flush();
+        return [save, read, now() - t];
+      } finally { h.close(); }
+    }
+
+    async function fixed(recs) {
+      const size = recs[0].payload.length + 32; // room for the JSON around the payload
+      const h = await handle('asset-plus-bench.bin');
+      try {
+        let t = now();
+        const b = new Uint8Array(recs.length * size);
+        recs.forEach((r, i) => enc.encodeInto(JSON.stringify(r), b.subarray(i * size, (i + 1) * size)));
+        h.truncate(0); h.write(b, { at: 0 }); h.flush();
+        const save = now() - t;
+        t = now();
+        const buf = new Uint8Array(h.getSize()); h.read(buf, { at: 0 });
+        const back = [];
+        for (let i = 0; i < recs.length; i++) {
+          const slot = buf.subarray(i * size, (i + 1) * size); const end = slot.indexOf(0);
+          back.push(JSON.parse(dec.decode(end === -1 ? slot : slot.subarray(0, end))));
+        }
+        const read = now() - t;
+        if (back.length !== recs.length) throw new Error('read mismatch');
+        t = now(); // change one record: overwrite its slot only
+        const slot = new Uint8Array(size); enc.encodeInto(JSON.stringify({ id: 5, payload: recs[6].payload }), slot);
+        h.write(slot, { at: 5 * size }); h.flush();
+        return [save, read, now() - t];
+      } finally { h.close(); }
+    }
+
+    async function cleanup() {
+      if (db) { db.close(); db = null; }
+      await new Promise((r) => { const d = indexedDB.deleteDatabase('asset-plus-bench'); d.onsuccess = d.onerror = d.onblocked = r; });
+      const root = await navigator.storage.getDirectory();
+      for (const n of ['asset-plus-bench.json', 'asset-plus-bench.bin']) await root.removeEntry(n).catch(() => {});
+    }
+
+    onmessage = async ({ data: { count, bytes, runs } }) => {
+      const recs = makeRecords(count, bytes);
+      const tests = { idb, file, fixed };
+      const results = {};
+      for (const [name, fn] of Object.entries(tests)) {
         try {
-          const root = await navigator.storage.getDirectory();
-          const fh = await root.getFileHandle('asset-plus-bench-w.bin', { create: true });
-          const h = await fh.createSyncAccessHandle();
-          const bytes = new TextEncoder().encode(e.data);
-          const t0 = performance.now();
-          h.truncate(0); h.write(bytes, { at: 0 }); h.flush();
-          const t1 = performance.now();
-          const buf = new Uint8Array(h.getSize()); h.read(buf, { at: 0 });
-          const t2 = performance.now();
-          h.close(); await root.removeEntry('asset-plus-bench-w.bin');
-          postMessage({ ok: buf.length === bytes.length, w: t1 - t0, r: t2 - t1 });
-        } catch (err) { postMessage({ error: String(err) }); }
-      };`;
-    return new Promise((res, rej) => {
-      const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
-      const wk = new Worker(url);
-      const timer = setTimeout(() => { wk.terminate(); rej(new Error('timeout')); }, 20000);
-      wk.onmessage = ({ data }) => {
-        clearTimeout(timer); wk.terminate(); URL.revokeObjectURL(url);
-        data.error ? rej(new Error(data.error)) : res([data.w, data.r]);
-      };
-      wk.onerror = (e) => { clearTimeout(timer); wk.terminate(); rej(new Error(e.message || 'worker error')); };
-      wk.postMessage(text);
-    });
+          const all = [];
+          for (let i = 0; i <= runs; i++) {
+            const r = await fn(recs);
+            if (i > 0) all.push(r); // run 0 is a warm-up
+            postMessage({ progress: name + ' ' + (i + 1) + '/' + (runs + 1) });
+          }
+          results[name] = [0, 1, 2].map((k) => median(all.map((r) => r[k])));
+        } catch (e) { results[name] = null; }
+      }
+      await cleanup().catch(() => {});
+      postMessage({ results });
+    };`;
+
+  const fmt = (ms) => (ms < 1 ? (ms > 0 ? ms.toFixed(1) : '<1') : ms < 10 ? +ms.toFixed(1) : Math.round(ms)) + ' ms';
+  const NAMES = { idb: 'IndexedDB', file: 'OPFS, one file', fixed: 'OPFS, fixed-size' };
+  const TESTS = ['Save all', 'Read all', 'Change 1 record'];
+
+  function browserName() {
+    const ua = navigator.userAgent;
+    const m = ua.match(/(Firefox|Edg|OPR|Chrome)\/(\d+)/);
+    if (m) return `${{ Edg: 'Edge', OPR: 'Opera' }[m[1]] || m[1]} ${m[2]}`;
+    const s = ua.match(/Version\/([\d.]+).*Safari/);
+    return s ? `Safari ${s[1]}` : 'your browser';
   }
 
-  btn.addEventListener('click', async () => {
+  function render(results, count, bytes, mb) {
+    const rows = Object.keys(NAMES).map((k) => `<tr><td>${NAMES[k]}</td>${
+      results[k] ? results[k].map((v) => `<td>${fmt(v)}</td>`).join('') : '<td colspan="3">Not supported here</td>'}</tr>`).join('');
+    const bars = TESTS.map((label, i) => {
+      const vals = Object.keys(NAMES).filter((k) => results[k]).map((k) => [k, results[k][i]]);
+      const max = Math.max(...vals.map(([, v]) => v)) || 1;
+      return `<div><h3>${label}</h3>${vals.map(([k, v]) => `<div class="bench-bar"><span>${NAMES[k]}</span><span class="bench-track"><span class="bench-fill is-${k}" style="width:calc((100% - 5.5em) * ${Math.max(0.005, v / max).toFixed(3)})"></span><b>${fmt(v)}</b></span></div>`).join('')}</div>`;
+    }).join('');
+    const ref = M1[`${count}x${bytes}`];
+    const refText = ref ? `<p class="bench-meta">For comparison, my M1 MacBook Air in Chrome: IndexedDB ${ref.idb.map(fmt).join(' / ')}, OPFS one file ${ref.file.map(fmt).join(' / ')} (save / read / change 1).</p>` : '';
+    out.innerHTML = `<p class="bench-meta">${count.toLocaleString()} records × ${bytes.toLocaleString()} bytes ≈ ${mb} MB · ${browserName()} · median of 3 runs</p>
+      <div class="cs-table-wrap"><table class="cs-table"><thead><tr><th>Storage</th>${TESTS.map((t) => `<th>${t}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="bench-bars">${bars}</div>${refText}`;
+  }
+
+  btn.addEventListener('click', () => {
     const [count, bytes] = sizeSel.value.split('x').map(Number);
-    const records = makeRecords(count, bytes);
-    const text = JSON.stringify(records);
-    const mb = (text.length / 1048576).toFixed(1);
-    btn.disabled = true;
-    btn.textContent = 'Running…';
-    let rows = '';
-    const run = async (name, fn, note) => {
-      try { const [w, r] = await fn(); rows += row(name, fmt(w), fmt(r), note); }
-      catch (e) { rows += row(name, '—', '—', 'Not supported here'); }
-      out.innerHTML = `<p class="bench-meta">${count.toLocaleString()} records × ${bytes.toLocaleString()} bytes ≈ ${mb} MB · ${navigator.userAgent.match(/(Firefox|Edg|Chrome|Safari)\/[\d.]+/)?.[0] ?? 'your browser'}</p>
-        <div class="cs-table-wrap"><table class="cs-table"><thead><tr><th>Storage</th><th>Write</th><th>Read</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    const mb = ((count * bytes) / 1048576).toFixed(1);
+    const url = URL.createObjectURL(new Blob([workerSrc], { type: 'text/javascript' }));
+    let wk;
+    const finish = (html) => {
+      if (html) out.innerHTML = html;
+      wk && wk.terminate(); URL.revokeObjectURL(url);
+      btn.disabled = false; btn.textContent = 'Run again';
     };
-    await run('IndexedDB', () => benchIDB(records), 'records, one transaction');
-    await run('OPFS · main thread', () => benchOPFS(text), 'one file, async API');
-    await run('OPFS · Web Worker', () => benchOPFSWorker(text), 'sync access handle');
-    btn.disabled = false;
-    btn.textContent = 'Run again';
+    btn.disabled = true; btn.textContent = 'Running…';
+    out.innerHTML = '<p class="bench-meta">Generating data…</p>';
+    try { wk = new Worker(url); } catch (e) { return finish('<p class="bench-meta">This browser can\'t run the benchmark in a Web Worker.</p>'); }
+    const timer = setTimeout(() => finish('<p class="bench-meta">The benchmark timed out. Try a smaller dataset.</p>'), 120000);
+    wk.onmessage = ({ data }) => {
+      if (data.progress) { out.innerHTML = `<p class="bench-meta">Running: ${data.progress.replace(/^\w+/, (k) => NAMES[k])}…</p>`; return; }
+      clearTimeout(timer);
+      render(data.results, count, bytes, mb);
+      finish();
+    };
+    wk.onerror = (e) => { clearTimeout(timer); finish(`<p class="bench-meta">The benchmark failed: ${e.message || 'worker error'}.</p>`); };
+    wk.postMessage({ count, bytes, runs: 3 });
   });
 })();
 
