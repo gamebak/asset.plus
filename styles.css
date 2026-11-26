@@ -297,8 +297,7 @@ img { display: block; max-width: 100%; height: auto; }
   position: relative;
   border-radius: 22px;
   overflow: hidden;
-  background: #0b0f14; /* the "blank paper" before printing */
-  box-shadow: var(--shadow);
+  background: var(--bg); /* cut-out photo sits on the page colour */
 }
 .hero-photo img {
   display: block;
@@ -342,6 +341,9 @@ img { display: block; max-width: 100%; height: auto; }
   background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
   opacity: 0.35;
   mix-blend-mode: multiply;
+  /* stripes only on the person, not on the transparent background */
+  -webkit-mask: url("assets/alexandru.webp") center / cover no-repeat;
+  mask: url("assets/alexandru.webp") center / cover no-repeat;
 }
 
 .photo-status {
