@@ -354,3 +354,20 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
     }
   })();
 })();
+
+// Dates in charts that should follow the current month, e.g. "Nov 2026"
+(() => {
+  const now = new Date();
+  document.querySelectorAll("[data-month-now]").forEach((el) => {
+    el.textContent = now.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  });
+  document.querySelectorAll("[data-since]").forEach((el) => {
+    const [year, month] = el.dataset.since.split("-").map(Number);
+    const months = (now.getFullYear() - year) * 12 + now.getMonth() + 1 - month;
+    const years = Math.floor(months / 12);
+    const rest = months % 12;
+    const plural = (n) => `${n} year${n === 1 ? "" : "s"}`;
+    const span = rest === 0 ? plural(years) : rest >= 9 ? `almost ${plural(years + 1)}` : `over ${plural(years)}`;
+    el.textContent = `${span} without fixes`;
+  });
+})();

@@ -66,7 +66,8 @@
         "Vue Router",
         "Pinia",
         "Vuex",
-        "Vite"
+        "Vite",
+        "Webpack"
       ]
     },
     {
@@ -146,6 +147,14 @@
             "@type": "Answer",
             "text": "It depends mostly on your libraries and on how much code uses removed features. Count those patterns first; a UI framework without a Vue 3 version usually takes longer than Vue itself."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Vite faster than Webpack for Vue apps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Usually much faster, and the gap grows with the size of the app. On a large Vue repository, my build pipeline went from about 3 minutes with Webpack to under 20 seconds with Vite."
+          }
         }
       ]
     }
@@ -204,7 +213,7 @@
           <p class="eyebrow">Guide · Vue &amp; Nuxt</p>
           <h1>Vue 2 is end of life: how to upgrade to Vue 3</h1>
           <p class="cs-lead"><strong>Vue 2 reached end of life on 31 December 2023.</strong> It still runs, but it no longer gets security or browser fixes, and the libraries around it are moving on. Here's how to upgrade a live Vue 2 app to Vue 3 <strong>step by step</strong>, without stopping feature work for months.</p>
-          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 8 min read</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 10 min read</p>
         </div>
       </header>
 
@@ -223,8 +232,8 @@
 
         <section>
           <h2>Why upgrade now</h2>
-          <figure class="cs-diagram"><svg viewBox="0 0 320 134" role="img" aria-labelledby="eol-t eol-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="eol-t">Vue 2 support timeline</title><desc id="eol-d">Vue 2.7, the last minor version, was released in July 2022. Vue 2 reached end of life in December 2023. By November 2026 it has gone almost three years without fixes.</desc><line x1="10" y1="60" x2="310" y2="60" stroke-width="3" style="stroke:var(--border)"/><rect x="130" y="54" width="180" height="12" rx="4" style="fill:var(--accent);opacity:.25"/><circle cx="10" cy="60" r="8" style="fill:var(--muted)"/><text x="10" y="34" font-size="15" font-weight="600" text-anchor="start" style="fill:var(--text)">Vue 2.7</text><text x="10" y="94" font-size="13" text-anchor="start" style="fill:var(--muted)">Jul 2022</text><circle cx="130" cy="60" r="8" style="fill:var(--accent)"/><text x="130" y="34" font-size="15" font-weight="600" text-anchor="middle" style="fill:var(--text)">End of life</text><text x="130" y="94" font-size="13" text-anchor="middle" style="fill:var(--muted)">Dec 2023</text><circle cx="310" cy="60" r="8" style="fill:var(--text)"/><text x="310" y="34" font-size="15" font-weight="600" text-anchor="end" style="fill:var(--text)">Today</text><text x="310" y="94" font-size="13" text-anchor="end" style="fill:var(--muted)">Nov 2026</text><text x="220" y="124" font-size="13" text-anchor="middle" style="fill:var(--muted)">almost 3 years without fixes</text></svg><figcaption>The shaded part is the time a Vue 2 app has run without security or browser fixes.</figcaption></figure>
-          <p>The <a href="https://v2.vuejs.org/lts/" target="_blank" rel="noopener">official Vue 2 LTS page</a> says that after end of life Vue 2 gets no more updates, “including security and browser compatibility fixes”. Your app won't stop working tomorrow, but every month adds risk:</p>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 134" role="img" aria-labelledby="eol-t eol-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="eol-t">Vue 2 support timeline</title><desc id="eol-d">Vue 2.7, the last minor version, was released in July 2022. Vue 2 reached end of life in December 2023. It has had no fixes since then.</desc><line x1="10" y1="60" x2="310" y2="60" stroke-width="3" style="stroke:var(--border)"/><rect x="130" y="54" width="180" height="12" rx="4" style="fill:var(--accent);opacity:.25"/><circle cx="10" cy="60" r="8" style="fill:var(--muted)"/><text x="10" y="34" font-size="15" font-weight="600" text-anchor="start" style="fill:var(--text)">Vue 2.7</text><text x="10" y="94" font-size="13" text-anchor="start" style="fill:var(--muted)">Jul 2022</text><circle cx="130" cy="60" r="8" style="fill:var(--accent)"/><text x="130" y="34" font-size="15" font-weight="600" text-anchor="middle" style="fill:var(--text)">End of life</text><text x="130" y="94" font-size="13" text-anchor="middle" style="fill:var(--muted)">Dec 2023</text><circle cx="310" cy="60" r="8" style="fill:var(--text)"/><text x="310" y="34" font-size="15" font-weight="600" text-anchor="end" style="fill:var(--text)">Today</text><text x="310" y="94" font-size="13" text-anchor="end" style="fill:var(--muted)" data-month-now>Nov 2026</text><text x="220" y="124" font-size="13" text-anchor="middle" style="fill:var(--muted)" data-since="2023-12">almost 3 years without fixes</text></svg><figcaption>The shaded part is the time a Vue 2 app has run without security or browser fixes.</figcaption></figure>
+          <p>The <a href="https://v2.vuejs.org/lts/" target="_blank" rel="nofollow noopener">official Vue 2 LTS page</a> says that after end of life Vue 2 gets no more updates, “including security and browser compatibility fixes”. Your app won't stop working tomorrow, but every month adds risk:</p>
           <ul class="cs-list">
             <li><strong>Security:</strong> a vulnerability found in Vue 2 or its compiler won't be fixed. Security audits and customer questionnaires increasingly ask about end-of-life software.</li>
             <li><strong>Libraries:</strong> new versions of routers, UI kits, charts and editors target Vue 3. You end up pinned to old versions, with their own unfixed bugs.</li>
@@ -272,7 +281,7 @@ cat package.json   # list every vue-* dependency and check its Vue 3 support</co
         <section>
           <h2>The upgrade path</h2>
           <figure class="cs-diagram"><svg viewBox="0 0 320 258" role="img" aria-labelledby="mig-t mig-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="mig-t">Vue 2 to Vue 3 upgrade path</title><desc id="mig-d">Four steps: clean up on Vue 2.7, switch to the migration build, upgrade the router, store and UI libraries, then remove the compatibility layer to run plain Vue 3.</desc><g class="d-box"><rect x="10" y="4" width="300" height="46" rx="10"/><text x="26" y="33">1. Vue 2.7</text><text class="d-sub" x="294" y="33" text-anchor="end">clean up first</text></g><g class="d-arrow"><path d="M160 52V70"/><path d="M155 64l5 6 5-6"/></g><g class="d-box"><rect x="10" y="72" width="300" height="46" rx="10"/><text x="26" y="101">2. Migration build</text><text class="d-sub" x="294" y="101" text-anchor="end">@vue/compat</text></g><g class="d-arrow"><path d="M160 120V138"/><path d="M155 132l5 6 5-6"/></g><g class="d-box"><rect x="10" y="140" width="300" height="46" rx="10"/><text x="26" y="169">3. Libraries</text><text class="d-sub" x="294" y="169" text-anchor="end">router · store · UI</text></g><g class="d-arrow"><path d="M160 188V206"/><path d="M155 200l5 6 5-6"/></g><g class="d-box d-accent"><rect x="10" y="208" width="300" height="46" rx="10"/><text x="26" y="237">4. Vue 3</text><text class="d-sub" x="294" y="237" text-anchor="end">remove compat</text></g></svg><figcaption>Each step is a normal release, so the app stays live: you can stop, ship features and continue.</figcaption></figure>
-          <p>This follows the order of the <a href="https://v3-migration.vuejs.org/migration-build.html" target="_blank" rel="noopener">official migration build guide</a>, grouped into four stages. The app stays deployable after each one.</p>
+          <p>This follows the order of the <a href="https://v3-migration.vuejs.org/migration-build.html" target="_blank" rel="nofollow noopener">official migration build guide</a>, grouped into four stages. The app stays deployable after each one.</p>
         </section>
 
         <section>
@@ -282,8 +291,46 @@ cat package.json   # list every vue-* dependency and check its Vue 3 support</co
             <li>Upgrade to <code>vue@2.7</code> and remove <code>@vue/composition-api</code> if you used it.</li>
             <li>Move old slot syntax (<code>slot</code>, <code>slot-scope</code>) to <code>v-slot</code>.</li>
             <li>Replace event buses, filters and <code>$children</code> now. All three are removed in Vue 3, and the fixes work in Vue 2 too.</li>
-            <li>If you still use Vue CLI and webpack, consider moving to Vite while you're here.</li>
+            <li>If you still use Vue CLI and Webpack, move to Vite now. It's often the biggest win of the whole migration, as the next section shows.</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>Webpack to Vite: the biggest win on big repos</h2>
+          <p>If your app still builds with Vue CLI and Webpack, moving to Vite is often the change your team notices most. On a large repository I worked on, <strong>the build pipeline went from about 3 minutes to under 20 seconds</strong>. Every push, every pull request and every deploy got faster, which adds up to hours each week across a team.</p>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 96" role="img" aria-labelledby="vite-t vite-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="vite-t">Build pipeline time: Webpack vs Vite</title><desc id="vite-d">On a large Vue app, the build pipeline took about 3 minutes with Webpack and under 20 seconds with Vite.</desc><text x="0" y="15" font-size="15" font-weight="600" style="fill:var(--text)">Webpack</text><text x="320" y="15" font-size="15" text-anchor="end" style="fill:var(--text)">about 3 min</text><rect x="0" y="23" width="320" height="16" rx="4" style="fill:var(--bg-alt)"/><rect x="0" y="23" width="320" height="16" rx="3" style="fill:var(--muted)"/><text x="0" y="67" font-size="15" font-weight="600" style="fill:var(--text)">Vite</text><text x="320" y="67" font-size="15" text-anchor="end" style="fill:var(--text)">under 20 s</text><rect x="0" y="75" width="320" height="16" rx="4" style="fill:var(--bg-alt)"/><rect x="0" y="75" width="35.6" height="16" rx="3" style="fill:var(--accent)"/></svg><figcaption>My own build pipeline on a large Vue app, before and after the switch. Same scale; shorter is faster.</figcaption></figure>
+          <p>The bigger the repository, the bigger the gain:</p>
+          <ul class="cs-list">
+            <li><strong>Development:</strong> Webpack bundles the whole app before the dev server starts. Vite serves your source files to the browser as native ES modules and only transforms the files a page actually requests, so start-up stays fast as the app grows.</li>
+            <li><strong>Hot reload:</strong> a change replaces one module instead of rebuilding a bundle, so saving a file shows up almost instantly.</li>
+            <li><strong>Production builds:</strong> current Vite builds with Rolldown and processes CSS with Lightning CSS, both written in Rust, instead of a long chain of JavaScript loaders.</li>
+          </ul>
+          <p>Do it while you're still on Vue 2.7, with <code>@vitejs/plugin-vue2</code>. Then step 2 only has to swap the plugin, and you change one thing at a time:</p>
+          <figure class="cs-code"><figcaption>JavaScript · vite.config.js (Vue 2.7)</figcaption><pre><code>import { defineConfig } from &quot;vite&quot;;
+import vue from &quot;@vitejs/plugin-vue2&quot;;
+import { fileURLToPath, URL } from &quot;node:url&quot;;
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: { &quot;@&quot;: fileURLToPath(new URL(&quot;./src&quot;, import.meta.url)) },
+  },
+});</code></pre></figure>
+          <p>Most of the work is in a few Webpack habits Vite doesn't share:</p>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Webpack / Vue CLI</th><th>Vite</th></tr></thead>
+              <tbody>
+                <tr><td><code>public/index.html</code> with injected scripts</td><td><code>index.html</code> in the project root, with <code>&lt;script type="module" src="/src/main.js"&gt;</code></td></tr>
+                <tr><td><code>process.env.VUE_APP_API_URL</code></td><td><code>import.meta.env.VITE_API_URL</code></td></tr>
+                <tr><td><code>require("./logo.png")</code></td><td><code>import logo from "./logo.png"</code></td></tr>
+                <tr><td><code>require.context()</code></td><td><code>import.meta.glob()</code></td></tr>
+                <tr><td><code>import Button from "./Button"</code></td><td><code>import Button from "./Button.vue"</code>: Vite needs the extension</td></tr>
+                <tr><td>Aliases in <code>vue.config.js</code></td><td><code>resolve.alias</code> in <code>vite.config.js</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Time your pipeline before and after, so you have a number to show. In my experience it's one of the easiest wins to explain to people who don't write code.</p>
         </section>
 
         <section>
@@ -334,7 +381,7 @@ app.use(router).use(store).mount(&quot;#app&quot;);</code></pre></figure>
 
         <section>
           <h2>The breaking changes you will meet most</h2>
-          <p>The <a href="https://v3-migration.vuejs.org/breaking-changes/" target="_blank" rel="noopener">full list</a> is long, but most apps hit the same handful.</p>
+          <p>The <a href="https://v3-migration.vuejs.org/breaking-changes/" target="_blank" rel="nofollow noopener">full list</a> is long, but most apps hit the same handful.</p>
           <h3>v-model and .sync on components</h3>
           <p>The prop is now <code>modelValue</code> and the event is <code>update:modelValue</code>. <code>.sync</code> is gone and becomes <code>v-model</code> with an argument:</p>
           <figure class="cs-code"><figcaption>HTML · template</figcaption><pre><code>&lt;!-- Vue 2 --&gt;
@@ -488,6 +535,10 @@ configureCompat({ MODE: 3 });</code></pre></figure>
           <details>
             <summary>How long does a Vue 2 to Vue 3 migration take?</summary>
             <p>It depends mostly on your libraries and on how much code uses removed features. Count those patterns first; a UI framework without a Vue 3 version usually takes longer than Vue itself.</p>
+          </details>
+          <details>
+            <summary>Is Vite faster than Webpack for Vue apps?</summary>
+            <p>Usually much faster, and the gap grows with the size of the app. On a large Vue repository, my build pipeline went from about 3 minutes with Webpack to under 20 seconds with Vite.</p>
           </details>
         </section>
 
