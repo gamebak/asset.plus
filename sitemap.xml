@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://asset.plus/</loc>
     <lastmod>2026-11-21</lastmod>
@@ -7,6 +7,9 @@
   <url>
     <loc>https://asset.plus/work/private-ai-self-hosted-llm/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/private-ai-self-hosted-llm-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/</loc>
@@ -15,45 +18,78 @@
   <url>
     <loc>https://asset.plus/guides/mcp-server-nodejs-internal-tools/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/mcp-server-nodejs-internal-tools-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/reduce-npm-dependencies/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/reduce-npm-dependencies-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/aws-lambda-cost-optimization-rust-arm64/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/aws-lambda-cost-optimization-rust-arm64-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/bun-vs-nodejs-production/</loc>
     <lastmod>2026-11-24</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/bun-vs-nodejs-production-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/bun-memory-usage-profiling/</loc>
     <lastmod>2026-11-24</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/bun-memory-usage-profiling-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/trading-bot-architecture-testing/</loc>
     <lastmod>2026-11-24</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/trading-bot-architecture-testing-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/vue-2-to-vue-3-migration/</loc>
     <lastmod>2026-11-26</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/vue-2-to-vue-3-migration-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/ios-safari-60fps-limit/</loc>
     <lastmod>2026-11-25</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/ios-safari-60fps-limit-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/github-pages-cache-busting/</loc>
     <lastmod>2026-11-24</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/github-pages-cache-busting-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/localstorage-done-right/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/localstorage-done-right-16x9.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://asset.plus/guides/opfs-vs-indexeddb-benchmark/</loc>
     <lastmod>2026-11-22</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-16x9.jpg</image:loc>
+    </image:image>
   </url>
 </urlset>
