@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue 2 End of Life: How to Upgrade to Vue 3 Step by Step</title>
+  <meta name="description" content="Vue 2 reached end of life on 31 December 2023. How to upgrade to Vue 3 step by step with the migration build, breaking changes, code examples and a checklist.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/vue-2-to-vue-3-migration/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/vue-2-to-vue-3-migration/">
+  <meta property="og:title" content="Vue 2 is end of life: how to upgrade to Vue 3">
+  <meta property="og:description" content="Vue 2 reached end of life on 31 December 2023. How to upgrade to Vue 3 step by step with the migration build, breaking changes, code examples and a checklist.">
+  <meta property="og:image" content="https://asset.plus/assets/cards/vue-2-to-vue-3-migration-16x9.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="Vue 2 is end of life: how to upgrade to Vue 3">
+  <meta name="twitter:description" content="Vue 2 reached end of life on 31 December 2023. How to upgrade to Vue 3 step by step with the migration build, breaking changes, code examples and a checklist.">
+  <meta name="twitter:image" content="https://asset.plus/assets/cards/vue-2-to-vue-3-migration-16x9.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://asset.plus/guides/vue-2-to-vue-3-migration/#article",
+      "headline": "Vue 2 is end of life: how to upgrade to Vue 3",
+      "description": "Vue 2 reached end of life on 31 December 2023. How to upgrade to Vue 3 step by step with the migration build, breaking changes, code examples and a checklist.",
+      "image": [
+        "https://asset.plus/assets/cards/vue-2-to-vue-3-migration-16x9.jpg",
+        "https://asset.plus/assets/cards/vue-2-to-vue-3-migration-4x3.jpg",
+        "https://asset.plus/assets/cards/vue-2-to-vue-3-migration-1x1.jpg"
+      ],
+      "datePublished": "2026-11-26T12:00:00+02:00",
+      "dateModified": "2026-11-26T12:00:00+02:00",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/vue-2-to-vue-3-migration/",
+      "about": [
+        "Vue 2",
+        "Vue 3",
+        "Vue 2 end of life",
+        "Vue migration",
+        "@vue/compat",
+        "Vue Router",
+        "Pinia",
+        "Vuex",
+        "Vite"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Vue 2 to Vue 3",
+          "item": "https://asset.plus/guides/vue-2-to-vue-3-migration/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "When did Vue 2 reach end of life?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "On 31 December 2023. The final release is Vue 2.7.16, and Vue 2 no longer receives updates, including security and browser compatibility fixes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to keep running Vue 2?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The app keeps working, but new vulnerabilities in Vue 2 won't be fixed and libraries are dropping support. Paid extended support exists, but upgrading to Vue 3 is the long-term solution."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I upgrade from Vue 2 to Vue 3 gradually?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The migration build, @vue/compat, runs your app on Vue 3 with Vue 2 behaviour and warns about each change, so you can fix them in small releases. It can run in production while you finish."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I have to rewrite my components with the Composition API?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Vue 3 still supports the Options API. Most components need only small changes, such as renamed lifecycle hooks and the new v-model."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does a Vue 2 to Vue 3 migration take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It depends mostly on your libraries and on how much code uses removed features. Count those patterns first; a UI framework without a Vue 3 version usually takes longer than Vue itself."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">Vue 2 to Vue 3</span>
+          </nav>
+          <p class="eyebrow">Guide · Vue &amp; Nuxt</p>
+          <h1>Vue 2 is end of life: how to upgrade to Vue 3</h1>
+          <p class="cs-lead"><strong>Vue 2 reached end of life on 31 December 2023.</strong> It still runs, but it no longer gets security or browser fixes, and the libraries around it are moving on. Here's how to upgrade a live Vue 2 app to Vue 3 <strong>step by step</strong>, without stopping feature work for months.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 8 min read</p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>The short answer</h2>
+          <ul class="cs-list">
+            <li><strong>Vue 2 is already end of life.</strong> The final version is 2.7.16, released in December 2023.</li>
+            <li><strong>You don't need a rewrite.</strong> Vue 3 still supports the Options API, so most components only need small changes.</li>
+            <li><strong>Use the migration build.</strong> <code>@vue/compat</code> is Vue 3 that behaves like Vue 2 and warns you about everything that has to change.</li>
+            <li><strong>The libraries are usually the hard part,</strong> especially UI frameworks such as Vuetify 2, BootstrapVue and Element UI.</li>
+            <li><strong>On big apps, expect surprises.</strong> In my case, the user session broke after the migration, and I rebuilt it on Pinia.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Why upgrade now</h2>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 134" role="img" aria-labelledby="eol-t eol-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="eol-t">Vue 2 support timeline</title><desc id="eol-d">Vue 2.7, the last minor version, was released in July 2022. Vue 2 reached end of life in December 2023. By November 2026 it has gone almost three years without fixes.</desc><line x1="10" y1="60" x2="310" y2="60" stroke-width="3" style="stroke:var(--border)"/><rect x="130" y="54" width="180" height="12" rx="4" style="fill:var(--accent);opacity:.25"/><circle cx="10" cy="60" r="8" style="fill:var(--muted)"/><text x="10" y="34" font-size="15" font-weight="600" text-anchor="start" style="fill:var(--text)">Vue 2.7</text><text x="10" y="94" font-size="13" text-anchor="start" style="fill:var(--muted)">Jul 2022</text><circle cx="130" cy="60" r="8" style="fill:var(--accent)"/><text x="130" y="34" font-size="15" font-weight="600" text-anchor="middle" style="fill:var(--text)">End of life</text><text x="130" y="94" font-size="13" text-anchor="middle" style="fill:var(--muted)">Dec 2023</text><circle cx="310" cy="60" r="8" style="fill:var(--text)"/><text x="310" y="34" font-size="15" font-weight="600" text-anchor="end" style="fill:var(--text)">Today</text><text x="310" y="94" font-size="13" text-anchor="end" style="fill:var(--muted)">Nov 2026</text><text x="220" y="124" font-size="13" text-anchor="middle" style="fill:var(--muted)">almost 3 years without fixes</text></svg><figcaption>The shaded part is the time a Vue 2 app has run without security or browser fixes.</figcaption></figure>
+          <p>The <a href="https://v2.vuejs.org/lts/" target="_blank" rel="noopener">official Vue 2 LTS page</a> says that after end of life Vue 2 gets no more updates, “including security and browser compatibility fixes”. Your app won't stop working tomorrow, but every month adds risk:</p>
+          <ul class="cs-list">
+            <li><strong>Security:</strong> a vulnerability found in Vue 2 or its compiler won't be fixed. Security audits and customer questionnaires increasingly ask about end-of-life software.</li>
+            <li><strong>Libraries:</strong> new versions of routers, UI kits, charts and editors target Vue 3. You end up pinned to old versions, with their own unfixed bugs.</li>
+            <li><strong>Tooling:</strong> Vue CLI is in maintenance mode, and current build tools and test runners are built for Vue 3.</li>
+            <li><strong>Hiring:</strong> developers who join now learn Vue 3, and older patterns slow them down.</li>
+          </ul>
+          <p>If you truly can't upgrade yet, paid extended support exists: the LTS page points to HeroDevs. It buys time, but it isn't a plan.</p>
+        </section>
+
+        <section>
+          <h2>Step 0: measure the job</h2>
+          <p>Before estimating anything, count the patterns that will need work. Run this from the project root:</p>
+          <figure class="cs-code"><figcaption>Shell · vue2-audit.sh</figcaption><pre><code>for pattern in \
+  &#x27;\$on\(|\$off\(|\$once\(&#x27; \
+  &#x27;\.sync\b&#x27; \
+  &#x27;Vue\.set|Vue\.delete|\$set\(|\$delete\(&#x27; \
+  &#x27;Vue\.filter|filters:&#x27; \
+  &#x27;\$listeners|\$scopedSlots|\$children&#x27; \
+  &#x27;beforeDestroy|destroyed\b&#x27; \
+  &#x27;functional&#x27; \
+  &#x27;Vue\.(component|use|mixin|directive|prototype)&#x27;
+do
+  printf &#x27;%-55s %s\n&#x27; &quot;$pattern&quot; &quot;$(grep -rEl &quot;$pattern&quot; src | wc -l)&quot;
+done
+
+cat package.json   # list every vue-* dependency and check its Vue 3 support</code></pre></figure>
+          <p>The number is how many files use each pattern. A few hundred <code>.sync</code> modifiers are a quick search-and-replace. A dozen components that rely on <code>$children</code> or a UI library without a Vue 3 version are where the time goes.</p>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Dependency on Vue 2</th><th>Vue 3 replacement</th></tr></thead>
+              <tbody>
+                <tr><td>Vue Router 3</td><td>Vue Router 4 or newer (5 is current)</td></tr>
+                <tr><td>Vuex 3</td><td>Pinia (recommended) or Vuex 4</td></tr>
+                <tr><td>Vuetify 2</td><td>Vuetify 3 or newer (4 is current): big changes</td></tr>
+                <tr><td>BootstrapVue</td><td><code>bootstrap-vue-next</code></td></tr>
+                <tr><td>Element UI</td><td>Element Plus</td></tr>
+                <tr><td>vue-i18n 8</td><td>vue-i18n 9 or newer</td></tr>
+                <tr><td>@vue/test-utils 1</td><td>@vue/test-utils 2</td></tr>
+                <tr><td>Nuxt 2</td><td>Nuxt 3 or newer: a separate migration</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>The upgrade path</h2>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 258" role="img" aria-labelledby="mig-t mig-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="mig-t">Vue 2 to Vue 3 upgrade path</title><desc id="mig-d">Four steps: clean up on Vue 2.7, switch to the migration build, upgrade the router, store and UI libraries, then remove the compatibility layer to run plain Vue 3.</desc><g class="d-box"><rect x="10" y="4" width="300" height="46" rx="10"/><text x="26" y="33">1. Vue 2.7</text><text class="d-sub" x="294" y="33" text-anchor="end">clean up first</text></g><g class="d-arrow"><path d="M160 52V70"/><path d="M155 64l5 6 5-6"/></g><g class="d-box"><rect x="10" y="72" width="300" height="46" rx="10"/><text x="26" y="101">2. Migration build</text><text class="d-sub" x="294" y="101" text-anchor="end">@vue/compat</text></g><g class="d-arrow"><path d="M160 120V138"/><path d="M155 132l5 6 5-6"/></g><g class="d-box"><rect x="10" y="140" width="300" height="46" rx="10"/><text x="26" y="169">3. Libraries</text><text class="d-sub" x="294" y="169" text-anchor="end">router · store · UI</text></g><g class="d-arrow"><path d="M160 188V206"/><path d="M155 200l5 6 5-6"/></g><g class="d-box d-accent"><rect x="10" y="208" width="300" height="46" rx="10"/><text x="26" y="237">4. Vue 3</text><text class="d-sub" x="294" y="237" text-anchor="end">remove compat</text></g></svg><figcaption>Each step is a normal release, so the app stays live: you can stop, ship features and continue.</figcaption></figure>
+          <p>This follows the order of the <a href="https://v3-migration.vuejs.org/migration-build.html" target="_blank" rel="noopener">official migration build guide</a>, grouped into four stages. The app stays deployable after each one.</p>
+        </section>
+
+        <section>
+          <h2>Step 1: get ready on Vue 2.7</h2>
+          <p>Vue 2.7 backported the Composition API and <code>&lt;script setup&gt;</code>. Upgrading to it first is a small change that lets new code use the Vue 3 style while the old code still runs:</p>
+          <ul class="cs-list">
+            <li>Upgrade to <code>vue@2.7</code> and remove <code>@vue/composition-api</code> if you used it.</li>
+            <li>Move old slot syntax (<code>slot</code>, <code>slot-scope</code>) to <code>v-slot</code>.</li>
+            <li>Replace event buses, filters and <code>$children</code> now. All three are removed in Vue 3, and the fixes work in Vue 2 too.</li>
+            <li>If you still use Vue CLI and webpack, consider moving to Vite while you're here.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Step 2: switch to the migration build</h2>
+          <p>Install Vue 3 and the compatibility build at the same version, and replace the Vue 2 template compiler:</p>
+          <figure class="cs-code"><figcaption>Shell</figcaption><pre><code>npm install vue@3 @vue/compat@3
+npm uninstall vue-template-compiler
+npm install -D @vitejs/plugin-vue</code></pre></figure>
+          <p>Then point every <code>import "vue"</code> at the compatibility build and start in Vue 2 mode:</p>
+          <figure class="cs-code"><figcaption>JavaScript · vite.config.js</figcaption><pre><code>import { defineConfig } from &quot;vite&quot;;
+import vue from &quot;@vitejs/plugin-vue&quot;;
+
+export default defineConfig({
+  resolve: {
+    alias: { vue: &quot;@vue/compat&quot; },
+  },
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          compatConfig: { MODE: 2 },
+        },
+      },
+    }),
+  ],
+});</code></pre></figure>
+          <p>The entry file changes from <code>new Vue()</code> to <code>createApp</code>. Global registrations move onto the app:</p>
+          <figure class="cs-code"><figcaption>JavaScript · main.js, before</figcaption><pre><code>import Vue from &quot;vue&quot;;
+import App from &quot;./App.vue&quot;;
+import router from &quot;./router&quot;;
+import store from &quot;./store&quot;;
+
+Vue.component(&quot;BaseButton&quot;, BaseButton);
+Vue.prototype.$api = api;
+
+new Vue({ router, store, render: (h) =&gt; h(App) }).$mount(&quot;#app&quot;);</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript · main.js, after</figcaption><pre><code>import { createApp } from &quot;vue&quot;;
+import App from &quot;./App.vue&quot;;
+import router from &quot;./router&quot;;
+import store from &quot;./store&quot;;
+
+const app = createApp(App);
+app.component(&quot;BaseButton&quot;, BaseButton);
+app.config.globalProperties.$api = api;
+app.use(router).use(store).mount(&quot;#app&quot;);</code></pre></figure>
+          <p>Now run the app. The console fills with warnings, each with a feature ID such as <code>GLOBAL_MOUNT</code> or <code>INSTANCE_EVENT_EMITTER</code>. Fix compile-time warnings first, then work through the runtime ones <strong>one feature ID at a time</strong>. The console filter helps: search for one ID, fix it everywhere, and move on.</p>
+        </section>
+
+        <section>
+          <h2>The breaking changes you will meet most</h2>
+          <p>The <a href="https://v3-migration.vuejs.org/breaking-changes/" target="_blank" rel="noopener">full list</a> is long, but most apps hit the same handful.</p>
+          <h3>v-model and .sync on components</h3>
+          <p>The prop is now <code>modelValue</code> and the event is <code>update:modelValue</code>. <code>.sync</code> is gone and becomes <code>v-model</code> with an argument:</p>
+          <figure class="cs-code"><figcaption>HTML · template</figcaption><pre><code>&lt;!-- Vue 2 --&gt;
+&lt;DatePicker v-model=&quot;date&quot; :range.sync=&quot;range&quot; /&gt;
+
+&lt;!-- Vue 3 --&gt;
+&lt;DatePicker v-model=&quot;date&quot; v-model:range=&quot;range&quot; /&gt;</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript · DatePicker.vue</figcaption><pre><code>export default {
+  props: [&quot;modelValue&quot;, &quot;range&quot;],      // was: value
+  emits: [&quot;update:modelValue&quot;, &quot;update:range&quot;],
+  methods: {
+    pick(day) {
+      this.$emit(&quot;update:modelValue&quot;, day);   // was: this.$emit(&quot;input&quot;, day)
+    },
+  },
+};</code></pre></figure>
+          <h3>The event bus</h3>
+          <p><code>$on</code>, <code>$off</code> and <code>$once</code> are removed, so <code>new Vue()</code> can no longer be an event bus. A tiny module replaces it, with no dependency:</p>
+          <figure class="cs-code"><figcaption>JavaScript · bus.js</figcaption><pre><code>const handlers = new Map();
+
+export const bus = {
+  on(name, fn) {
+    if (!handlers.has(name)) handlers.set(name, new Set());
+    handlers.get(name).add(fn);
+    return () =&gt; handlers.get(name).delete(fn);   // call to unsubscribe
+  },
+  emit(name, ...args) {
+    handlers.get(name)?.forEach((fn) =&gt; fn(...args));
+  },
+};</code></pre></figure>
+          <p>Remember to unsubscribe in <code>beforeUnmount</code>. Forgotten listeners were a common memory leak in Vue 2 as well.</p>
+          <h3>Filters</h3>
+          <p>Filters are removed. Use a method or a computed property instead:</p>
+          <figure class="cs-code"><figcaption>HTML · template</figcaption><pre><code>&lt;!-- Vue 2 --&gt;
+&lt;p&gt;{{ price | currency }}&lt;/p&gt;
+
+&lt;!-- Vue 3 --&gt;
+&lt;p&gt;{{ currency(price) }}&lt;/p&gt;</code></pre></figure>
+          <h3>Smaller ones</h3>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Vue 2</th><th>Vue 3</th></tr></thead>
+              <tbody>
+                <tr><td><code>beforeDestroy</code>, <code>destroyed</code></td><td><code>beforeUnmount</code>, <code>unmounted</code></td></tr>
+                <tr><td><code>Vue.set(obj, key, value)</code></td><td><code>obj[key] = value</code> (reactivity tracks it)</td></tr>
+                <tr><td><code>$listeners</code></td><td>Merged into <code>$attrs</code>, which now also has <code>class</code> and <code>style</code></td></tr>
+                <tr><td><code>$scopedSlots</code></td><td><code>$slots</code>, called as functions</td></tr>
+                <tr><td><code>@click.native</code></td><td><code>@click</code>, and declare component events in <code>emits</code></td></tr>
+                <tr><td><code>() =&gt; import("./Chart.vue")</code> as a component</td><td><code>defineAsyncComponent(() =&gt; import("./Chart.vue"))</code></td></tr>
+                <tr><td><code>.v-enter</code>, <code>.v-leave</code> CSS classes</td><td><code>.v-enter-from</code>, <code>.v-leave-from</code> (no warning, search for them)</td></tr>
+                <tr><td>A watcher on an array fires on mutation</td><td>Add <code>deep: true</code> to react to mutations</td></tr>
+                <tr><td><code>v-if</code> and <code>v-for</code> on one element: <code>v-for</code> wins</td><td><code>v-if</code> wins: move it to a wrapper <code>&lt;template&gt;</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>Step 3: upgrade the router, the store and the UI library</h2>
+          <p>The router changes how it is created, and the catch-all route has a new syntax:</p>
+          <figure class="cs-code"><figcaption>JavaScript · router.js</figcaption><pre><code>import { createRouter, createWebHistory } from &quot;vue-router&quot;;
+
+export default createRouter({
+  history: createWebHistory(),   // was: mode: &quot;history&quot;
+  routes: [
+    { path: &quot;/&quot;, component: Home },
+    { path: &quot;/:pathMatch(.*)*&quot;, component: NotFound },   // was: path: &quot;*&quot;
+  ],
+});</code></pre></figure>
+          <p>For state, Vuex 4 works with Vue 3, but Pinia is the recommended store now. You can move one Vuex module at a time:</p>
+          <figure class="cs-code"><figcaption>JavaScript · stores/cart.js</figcaption><pre><code>import { defineStore } from &quot;pinia&quot;;
+
+export const useCartStore = defineStore(&quot;cart&quot;, {
+  state: () =&gt; ({ items: [] }),
+  getters: {
+    total: (state) =&gt; state.items.reduce((sum, item) =&gt; sum + item.price, 0),
+  },
+  actions: {
+    add(item) {
+      this.items.push(item);   // no mutations, no commit()
+    },
+  },
+});</code></pre></figure>
+          <p>The UI library is often the longest step. Vuetify, BootstrapVue and Element UI all changed components and props in their Vue 3 versions, and the migration build can't hide those differences, because it only covers Vue itself. Plan this per screen, and test the screens your users depend on most.</p>
+        </section>
+
+        <section>
+          <h2>From my experience: big apps don't migrate smoothly</h2>
+          <p>On a small app, the steps above can go quickly. On a large one, don't expect a smooth transition. I migrated a large monolith, and the hardest problems weren't in the components at all.</p>
+          <p>The user session was kept by a Vue 2 store library, and it broke after the migration. The console showed no warning about it, because the migration build only covers Vue itself, not the libraries around it. I rebuilt the session state on <strong>Pinia</strong>, and it has been stable since.</p>
+          <ul class="cs-list">
+            <li><strong>Find everything that keeps state between pages</strong> before you start: sessions, login, carts, saved filters, and any plugin that stores data in <code>localStorage</code> or cookies.</li>
+            <li><strong>Test log in, refresh and log out by hand</strong> after every step, not only at the end.</li>
+            <li><strong>Plan time for the surprises.</strong> In a monolith, a small change in one place can break a screen nobody thought was related.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Step 4: remove the migration build</h2>
+          <p>When the console is quiet and no dependency still needs Vue 2 behaviour, switch components to Vue 3 mode one at a time, then all at once:</p>
+          <figure class="cs-code"><figcaption>JavaScript</figcaption><pre><code>// one component at a time
+export default {
+  compatConfig: { MODE: 3 },
+  // ...
+};
+
+// or the whole app, keeping only what you still need
+import { configureCompat } from &quot;vue&quot;;
+configureCompat({ MODE: 3 });</code></pre></figure>
+          <p>Finally, remove the <code>vue</code> alias, the <code>compatConfig</code> option and <code>@vue/compat</code> itself. The migration build is allowed in production, with a small cost in size and speed, so you don't have to finish everything before your next release.</p>
+        </section>
+
+        <section>
+          <h2>Tests: your safety net</h2>
+          <ul class="cs-list">
+            <li><strong>Write a few end-to-end tests first</strong> for login, checkout or whatever earns money. They don't care which Vue version runs underneath.</li>
+            <li><strong>Upgrade <code>@vue/test-utils</code> to v2.</strong> <code>propsData</code> becomes <code>props</code>, and <code>mocks</code>, <code>stubs</code> and plugins move under <code>global</code>.</li>
+            <li><strong>Treat console warnings as test failures</strong> in CI once a feature ID is fixed, so it can't come back.</li>
+            <li><strong>Release in small steps</strong> and watch error tracking after each one.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What doesn't migrate</h2>
+          <ul class="cs-list">
+            <li><strong>Internet Explorer 11:</strong> Vue 3 doesn't support it. If you must support IE11, you have to stay on Vue 2.</li>
+            <li><strong>Code that relies on Vue 2 internals,</strong> such as private VNode properties. Some old plugins do this and need replacing.</li>
+            <li><strong>Nuxt 2:</strong> it reached end of life in June 2024 and has its own path to current Nuxt. Plan it as a separate project.</li>
+            <li><strong>Server rendering</strong> with <code>vue-server-renderer</code> moves to <code>@vue/server-renderer</code> and a different setup.</li>
+          </ul>
+        </section>
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>When did Vue 2 reach end of life?</summary>
+            <p>On 31 December 2023. The final release is Vue 2.7.16, and Vue 2 no longer receives updates, including security and browser compatibility fixes.</p>
+          </details>
+          <details>
+            <summary>Is it safe to keep running Vue 2?</summary>
+            <p>The app keeps working, but new vulnerabilities in Vue 2 won't be fixed and libraries are dropping support. Paid extended support exists, but upgrading to Vue 3 is the long-term solution.</p>
+          </details>
+          <details>
+            <summary>Can I upgrade from Vue 2 to Vue 3 gradually?</summary>
+            <p>Yes. The migration build, @vue/compat, runs your app on Vue 3 with Vue 2 behaviour and warns about each change, so you can fix them in small releases. It can run in production while you finish.</p>
+          </details>
+          <details>
+            <summary>Do I have to rewrite my components with the Composition API?</summary>
+            <p>No. Vue 3 still supports the Options API. Most components need only small changes, such as renamed lifecycle hooks and the new v-model.</p>
+          </details>
+          <details>
+            <summary>How long does a Vue 2 to Vue 3 migration take?</summary>
+            <p>It depends mostly on your libraries and on how much code uses removed features. Count those patterns first; a UI framework without a Vue 3 version usually takes longer than Vue itself.</p>
+          </details>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Still running Vue 2?</h2>
+            <p>I audit Vue 2 apps, plan the upgrade around your releases and move them to Vue 3 step by step, so the app keeps shipping. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/ios-safari-60fps-limit/"><span class="rel-kicker">Web performance</span><strong>The iOS Safari 60fps limit: making web apps feel native</strong></a><a class="card rel-card" href="/guides/bun-vs-nodejs-production/"><span class="rel-kicker">Runtimes</span><strong>Bun vs Node.js in production: when I choose each</strong></a><a class="card rel-card" href="/guides/github-pages-cache-busting/"><span class="rel-kicker">Web performance</span><strong>GitHub Pages cache: why your update doesn't show</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>
