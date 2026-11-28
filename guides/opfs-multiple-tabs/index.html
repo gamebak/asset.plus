@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPFS in Multiple Tabs: Fixing NoModificationAllowedError</title>
+  <meta name="description" content="Why OPFS breaks when your app is open in two tabs, tested in Chrome, Firefox and Safari's engine in November 2026, and three fixes that work: Web Locks, a leader tab and readwrite-unsafe.">
+  <meta name="author" content="Alexandru Cobuz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://asset.plus/guides/opfs-multiple-tabs/">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Asset.plus">
+  <meta property="og:url" content="https://asset.plus/guides/opfs-multiple-tabs/">
+  <meta property="og:title" content="OPFS in Multiple Tabs: Fixing NoModificationAllowedError">
+  <meta property="og:description" content="Why OPFS breaks when your app is open in two tabs, tested in Chrome, Firefox and Safari's engine in November 2026, and three fixes that work: Web Locks, a leader tab and readwrite-unsafe.">
+  <meta property="og:image" content="https://asset.plus/assets/cards/opfs-multiple-tabs-16x9.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta property="og:image:alt" content="Cover image for “OPFS in multiple tabs: fixing NoModificationAllowedError”">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@CobuzAlexandru">
+  <meta name="twitter:title" content="OPFS in Multiple Tabs: Fixing NoModificationAllowedError">
+  <meta name="twitter:description" content="Why OPFS breaks when your app is open in two tabs, tested in Chrome, Firefox and Safari's engine in November 2026, and three fixes that work: Web Locks, a leader tab and readwrite-unsafe.">
+  <meta name="twitter:image" content="https://asset.plus/assets/cards/opfs-multiple-tabs-16x9.jpg">
+  <meta name="twitter:image:alt" content="Cover image for “OPFS in multiple tabs: fixing NoModificationAllowedError”">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://asset.plus/guides/opfs-multiple-tabs/#article",
+      "headline": "OPFS in multiple tabs: fixing NoModificationAllowedError",
+      "description": "Why OPFS breaks when your app is open in two tabs, tested in Chrome, Firefox and Safari's engine in November 2026, and three fixes that work: Web Locks, a leader tab and readwrite-unsafe.",
+      "image": [
+        "https://asset.plus/assets/cards/opfs-multiple-tabs-16x9.jpg",
+        "https://asset.plus/assets/cards/opfs-multiple-tabs-4x3.jpg",
+        "https://asset.plus/assets/cards/opfs-multiple-tabs-1x1.jpg"
+      ],
+      "datePublished": "2026-11-28T09:00:00+02:00",
+      "dateModified": "2026-11-28T09:00:00+02:00",
+      "author": {
+        "@id": "https://asset.plus/#person"
+      },
+      "publisher": {
+        "@id": "https://asset.plus/#person"
+      },
+      "mainEntityOfPage": "https://asset.plus/guides/opfs-multiple-tabs/",
+      "about": [
+        "OPFS",
+        "Origin Private File System",
+        "NoModificationAllowedError",
+        "createSyncAccessHandle",
+        "Web Locks API",
+        "BroadcastChannel",
+        "Web Workers",
+        "Browser storage",
+        "Safari",
+        "SQLite WASM"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://asset.plus/#person",
+      "name": "Alexandru Cobuz",
+      "url": "https://asset.plus/",
+      "jobTitle": "Senior Full-Stack Engineer",
+      "sameAs": [
+        "https://www.linkedin.com/in/alexandru-cobuz/",
+        "https://x.com/CobuzAlexandru",
+        "https://github.com/gamebak"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://asset.plus/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://asset.plus/guides/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "OPFS in multiple tabs",
+          "item": "https://asset.plus/guides/opfs-multiple-tabs/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why does OPFS throw NoModificationAllowedError?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because another tab, worker or stream already has the file open. createSyncAccessHandle() takes an exclusive lock on the file by default, so a second open fails until the first handle is closed. This is by design in the File System standard, not a browser bug, and it was still the default in Chrome, Firefox and Safari in November 2026."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does Safari throw InvalidStateError instead of NoModificationAllowedError?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WebKit, the engine behind Safari, reports the same lock conflict as InvalidStateError. In my tests Chrome and Firefox threw NoModificationAllowedError, while WebKit threw InvalidStateError for the same situation. Code that only checks for NoModificationAllowedError will miss the error in Safari, so check for both."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does readwrite-unsafe work in Firefox and Safari?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. As of November 2026 only Chromium browsers (Chrome 121 and later, Edge and others) support the mode option of createSyncAccessHandle. Firefox and Safari ignore it without an error and return a normal exclusive handle, so the second tab still fails. In my tests that was true for read-only mode too."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can two tabs read the same OPFS file at the same time?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, with fileHandle.getFile(). It returns a snapshot of the file and doesn't need a lock, and it worked in Chrome, Firefox and Safari's engine while another tab held the file open. Opening a second sync access handle, even in read-only mode, only works in Chromium."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the OPFS lock released when a tab is closed?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. In my tests closing a tab that held a sync access handle released the lock in Chrome, Firefox and Safari's engine, and another tab could open the file straight away. A handle you forget to close inside a tab that stays open keeps the file locked until that tab closes or reloads."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I open OPFS files from a SharedWorker?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not with createSyncAccessHandle in Chrome and Firefox: it only exists in dedicated workers. A SharedWorker can coordinate the tabs, but the file itself has to be opened by a dedicated worker in one of them. The leader-tab pattern does that with the Web Locks API."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does SQLite WASM have the same multi-tab problem?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, because it stores the database in OPFS. The opfs-sahpool VFS keeps the file open and allows one connection at a time, so a second tab fails. The opfs VFS supports several tabs but needs COOP and COEP headers. Many apps run SQLite in one leader tab and send queries to it from the others."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo" aria-label="Asset.plus — home">
+        <img class="logo-mark" src="/favicon.svg" alt="" width="32" height="32">
+        <span class="logo-text">
+          <span class="logo-name">Asset<span class="logo-dot">.</span>plus</span>
+          <span class="logo-sub">Web &amp; Software Development</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/#services">Services</a>
+        <a href="/#experience">Experience</a>
+        <a href="/guides/">Guides</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+        </button>
+        <a href="/#contact" class="btn btn-primary btn-sm header-cta">Get in touch</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="cs">
+      <header class="cs-hero">
+        <div class="container cs-narrow">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span><a href="/guides/">Guides</a><span aria-hidden="true">/</span><span aria-current="page">OPFS in multiple tabs</span>
+          </nav>
+          <p class="eyebrow">Guide · Browser storage</p>
+          <h1>OPFS in multiple tabs: fixing NoModificationAllowedError</h1>
+          <p class="cs-lead">Your OPFS code works perfectly until a user opens your app in a second tab. Then it fails with <code>NoModificationAllowedError</code>, or in Safari with an <code>InvalidStateError</code> that doesn't mention locks at all. I checked whether this is still a problem in <strong>November 2026</strong> by testing <strong>Chrome, Firefox and Safari's engine</strong>, and I tested every fix below in all three.</p>
+          <p class="cs-byline">By <a href="/">Alexandru Cobuz</a> · Senior full-stack engineer · 9 min read · Updated <time datetime="2026-11-28">28 Nov 2026</time></p>
+        </div>
+      </header>
+
+      <div class="container cs-narrow cs-body">
+
+        <section>
+          <h2>The short answer</h2>
+          <ul class="cs-list">
+            <li><strong>Yes, it still happens.</strong> <code>createSyncAccessHandle()</code> locks the file exclusively by default in every browser, so the second tab that opens the same file fails.</li>
+            <li><strong>Safari reports it differently.</strong> Chrome and Firefox throw <code>NoModificationAllowedError</code>. Safari's engine throws <code>InvalidStateError</code>. Catch both.</li>
+            <li><strong>The <code>readwrite-unsafe</code> fix only works in Chromium.</strong> Firefox and Safari ignore the option without an error and lock the file anyway.</li>
+            <li><strong>The fix that works everywhere:</strong> wrap short file operations in a <a href="#web-locks">Web Lock</a>. For a file you keep open, like a SQLite database, let <a href="#leader-tab">one leader tab</a> own it and have the other tabs send it requests.</li>
+          </ul>
+          <p>Still deciding whether OPFS is the right storage at all? IndexedDB handles several tabs for you through transactions. My <a href="/guides/opfs-vs-indexeddb-benchmark/">OPFS vs IndexedDB benchmark</a> shows when OPFS is worth this extra work.</p>
+        </section>
+
+        <section>
+          <h2>Does the problem still exist? What I tested</h2>
+          <p>I ran the same test in Chromium 159, Firefox 159 and WebKit 27.2 (the engine behind Safari) on an M1 MacBook Air, using Playwright with a normal, persistent browser profile. Each test opened the same OPFS file from dedicated workers in two separate tabs.</p>
+          <div class="cs-table-wrap">
+            <table class="cs-table">
+              <thead><tr><th>Second tab tries to…</th><th>Chrome</th><th>Firefox</th><th>Safari (WebKit)</th></tr></thead>
+              <tbody>
+                <tr><td>Open a sync access handle (default)</td><td>NoModification<wbr>AllowedError</td><td>NoModification<wbr>AllowedError</td><td>InvalidState<wbr>Error</td></tr>
+                <tr><td>Open a writable stream with <code>createWritable()</code></td><td>NoModification<wbr>AllowedError</td><td>NoModification<wbr>AllowedError</td><td>InvalidState<wbr>Error</td></tr>
+                <tr><td>Open with <code>mode: "read-only"</code> in both tabs</td><td>Works</td><td>Fails</td><td>Fails</td></tr>
+                <tr><td>Open with <code>mode: "readwrite-unsafe"</code> in both tabs</td><td>Works</td><td>Fails</td><td>Fails</td></tr>
+                <tr><td>Read it with <code>getFile()</code></td><td>Works</td><td>Works</td><td>Works</td></tr>
+                <tr><td>Delete it with <code>removeEntry()</code></td><td>NoModification<wbr>AllowedError</td><td>NoModification<wbr>AllowedError</td><td>NoModification<wbr>AllowedError</td></tr>
+                <tr><td>Open it after the first tab closes</td><td>Works</td><td>Works</td><td>Works</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The lock is by design. The File System standard says a sync access handle locks its file, and the <a href="https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createSyncAccessHandle" target="_blank" rel="nofollow noopener">MDN reference for createSyncAccessHandle()</a> documents the error. What changed is that Chromium added the <code>mode</code> option to relax it, and the other engines haven't. The <a href="https://bugs.webkit.org/show_bug.cgi?id=283959" target="_blank" rel="nofollow noopener">WebKit request for readwrite-unsafe</a>, filed in December 2024, was still unassigned in November 2026.</p>
+          <p>The lock doesn't only fail when two tabs open the file at exactly the same moment. Three tabs each opening, updating and closing a small file 20 times in parallel, without any coordination, kept colliding:</p>
+          <figure class="cs-diagram"><svg viewBox="0 0 320 218" role="img" aria-labelledby="fail-t fail-d" style="min-width:0;max-width:440px;margin:0 auto"><title id="fail-t">Failed opens out of 60: no lock vs Web Locks</title><desc id="fail-d">60 parallel opens of the same OPFS file from three tabs, median of five runs. Without a lock, Chrome failed 33, Firefox 54 and Safari's engine 15. With Web Locks, none failed in any browser.</desc><rect x="0" y="3" width="11" height="11" rx="3" style="fill:var(--muted)"/><text x="17" y="13" font-size="13" style="fill:var(--text)">No lock</text><rect x="100" y="3" width="11" height="11" rx="3" style="fill:var(--accent)"/><text x="117" y="13" font-size="13" style="fill:var(--text)">Web Locks</text><text x="0" y="48" font-size="14" font-weight="600" style="fill:var(--text)">Chrome</text><rect x="0" y="56" width="132" height="13" rx="3" style="fill:var(--muted)"><title>Chrome · no lock: 33 of 60 failed</title></rect><text x="138" y="67" font-size="12" style="fill:var(--text)">33 of 60</text><rect x="0" y="73" width="2" height="13" rx="1" style="fill:var(--accent)"><title>Chrome · Web Locks: 0 failed</title></rect><text x="8" y="84" font-size="12" style="fill:var(--text)">0</text><text x="0" y="112" font-size="14" font-weight="600" style="fill:var(--text)">Firefox</text><rect x="0" y="120" width="216" height="13" rx="3" style="fill:var(--muted)"><title>Firefox · no lock: 54 of 60 failed</title></rect><text x="222" y="131" font-size="12" style="fill:var(--text)">54 of 60</text><rect x="0" y="137" width="2" height="13" rx="1" style="fill:var(--accent)"><title>Firefox · Web Locks: 0 failed</title></rect><text x="8" y="148" font-size="12" style="fill:var(--text)">0</text><text x="0" y="176" font-size="14" font-weight="600" style="fill:var(--text)">Safari (WebKit)</text><rect x="0" y="184" width="60" height="13" rx="3" style="fill:var(--muted)"><title>Safari (WebKit) · no lock: 15 of 60 failed</title></rect><text x="66" y="195" font-size="12" style="fill:var(--text)">15 of 60</text><rect x="0" y="201" width="2" height="13" rx="1" style="fill:var(--accent)"><title>Safari (WebKit) · Web Locks: 0 failed</title></rect><text x="8" y="212" font-size="12" style="fill:var(--text)">0</text></svg><figcaption>Failed opens out of 60, three tabs × 20 parallel updates, median of 5 runs. Fewer is better.</figcaption></figure>
+          <p>With a Web Lock around the same code, nothing failed, and the shared counter ended at exactly 60 in every browser, with no updates lost.</p>
+        </section>
+
+        <section>
+          <h2>Three traps that make it worse</h2>
+          <h3>1. Safari throws a different error</h3>
+          <p>WebKit reports the conflict as <code>InvalidStateError: The object is in an invalid state.</code> Code like <code>if (e.name === "NoModificationAllowedError") retry()</code> never retries in Safari. In a private WebKit session it was worse: every OPFS call failed with <code>UnknownError</code> and a message about an "unknown transient reason (e.g. out of memory)", which is just OPFS being unavailable there.</p>
+          <figure class="cs-code"><figcaption>JavaScript · detect a lock conflict in every browser</figcaption><pre><code>const isLockError = (e) =&gt;
+  e?.name === "NoModificationAllowedError" || // Chrome, Firefox
+  e?.name === "InvalidStateError";            // Safari</code></pre></figure>
+
+          <h3>2. Firefox and Safari ignore the <code>mode</code> option</h3>
+          <p>Passing <code>{ mode: "readwrite-unsafe" }</code> doesn't throw in Firefox or Safari. They simply don't read the option and hand you an exclusive handle, so the code looks fine until the second tab arrives. That applies to <code>"read-only"</code> as well: in my tests two read-only handles collided in both browsers. The <a href="https://github.com/emscripten-core/emscripten/pull/27937" target="_blank" rel="nofollow noopener">Emscripten OPFS backend</a> describes the same behaviour.</p>
+          <p>You can detect support by checking whether the browser actually reads the option:</p>
+          <figure class="cs-code"><figcaption>JavaScript · inside a dedicated worker</figcaption><pre><code>async function supportsLockModes(fileHandle) {
+  let read = false;
+  const probe = await fileHandle.createSyncAccessHandle({
+    get mode() { read = true; return "readwrite"; },
+  });
+  probe.close();
+  return read; // true in Chromium, false in Firefox and Safari
+}</code></pre></figure>
+          <p>It opens a normal handle for a moment, so run it once at startup on a file no other tab is using, and cache the result.</p>
+
+          <h3>3. Two writable streams don't fail, they overwrite</h3>
+          <p>On the main thread, <code>createWritable()</code> from two tabs at once worked in all three browsers. Each writer gets its own temporary copy, and whichever closes last replaces the whole file. No error, just one tab's changes silently gone. Treat writable streams like sync handles and put them behind a lock too.</p>
+        </section>
+
+        <section id="web-locks">
+          <h2>Fix 1: Web Locks for short operations</h2>
+          <p>If your code opens a file, does some work and closes it again, wrap that in the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API" target="_blank" rel="nofollow noopener">Web Locks API</a>. A lock with the same name is shared by every tab and worker on your site. The browser queues the requests and releases the lock automatically when the callback finishes or the tab closes.</p>
+          <figure class="cs-code"><figcaption>JavaScript · opfs.worker.js</figcaption><pre><code>async function withFile(name, fn) {
+  return navigator.locks.request(`opfs:${name}`, async () =&gt; {
+    const root = await navigator.storage.getDirectory();
+    const file = await root.getFileHandle(name, { create: true });
+    const handle = await file.createSyncAccessHandle();
+    try {
+      return await fn(handle);
+    } finally {
+      handle.close(); // always close before the lock is released
+    }
+  });
+}
+
+// Example: a counter several tabs can update safely
+const next = await withFile("counter.bin", (handle) =&gt; {
+  const value = new Uint32Array(1);
+  handle.read(value, { at: 0 });
+  value[0]++;
+  handle.write(value, { at: 0 });
+  handle.flush();
+  return value[0];
+});</code></pre></figure>
+          <p>In my test the second tab simply waited for the first to finish (about 200 ms, the time I held the file open), then succeeded. Keep the work inside the lock short. Every other tab waits for it.</p>
+          <p>Use this for exports, logs, settings files and caches: anything you can open, change and close in one go.</p>
+        </section>
+
+        <section id="leader-tab">
+          <h2>Fix 2: a leader tab for files you keep open</h2>
+          <p>Some files are too expensive to open and close all the time. A SQLite database, or a large file with records at <a href="/guides/opfs-vs-indexeddb-benchmark/">fixed positions</a>, works best with one handle that stays open. Then the rule is simple: one tab owns the file, and the others ask that tab to do the work.</p>
+          <figure class="cs-diagram"><svg viewBox="0 0 720 230" role="img" aria-labelledby="lead-t lead-d"><title id="lead-t">Leader tab pattern for OPFS</title><desc id="lead-d">Tabs 2 and 3 send requests over a BroadcastChannel to tab 1, the leader, which holds a Web Lock. Only the leader's dedicated worker opens the OPFS file.</desc><rect class="d-zone" x="276" y="44" width="438" height="150" rx="14" /><text class="d-zone-label" x="290" y="66">Only this tab touches the file</text><g class="d-box"><rect x="14" y="24" width="140" height="60" rx="10" /><text x="84" y="50" text-anchor="middle">Tab 2</text><text class="d-sub" x="84" y="68" text-anchor="middle">follower</text></g><g class="d-box"><rect x="14" y="150" width="140" height="60" rx="10" /><text x="84" y="176" text-anchor="middle">Tab 3</text><text class="d-sub" x="84" y="194" text-anchor="middle">follower</text></g><text class="d-zone-label" x="84" y="122" text-anchor="middle">BroadcastChannel</text><g class="d-arrow"><path d="M158 54H222V112H288" /><path d="M282 107l6 5-6 5" /></g><g class="d-arrow"><path d="M158 180H222V132H288" /><path d="M282 127l6 5-6 5" /></g><g class="d-box d-accent"><rect x="292" y="92" width="160" height="60" rx="10" /><text x="372" y="118" text-anchor="middle">Tab 1 · leader</text><text class="d-sub" x="372" y="136" text-anchor="middle">holds the Web Lock</text></g><g class="d-arrow"><path d="M456 122H482" /><path d="M476 117l6 5-6 5" /></g><g class="d-box"><rect x="486" y="92" width="214" height="60" rx="10" /><text x="593" y="118" text-anchor="middle">Dedicated worker</text><text class="d-sub" x="593" y="136" text-anchor="middle">opens the file once</text></g></svg><figcaption>When the leader tab closes, the next tab in line gets the lock and takes over.</figcaption></figure>
+          <p>The Web Locks API picks the leader. Every tab asks for the same lock and never releases it, so the first one gets it and the others wait in line. That gives you automatic failover for free.</p>
+          <figure class="cs-code"><figcaption>JavaScript · db-client.js (loaded in every tab)</figcaption><pre><code>const channel = new BroadcastChannel("app-db");
+const waiting = new Map(); // request id -&gt; { resolve, reject, timer }
+let worker = null;         // only set in the leader tab
+
+function settle({ id, result, error }) {
+  const p = waiting.get(id);
+  if (!p) return;
+  waiting.delete(id);
+  clearTimeout(p.timer);
+  error ? p.reject(new Error(error)) : p.resolve(result);
+}
+
+// Replies from the leader tab
+channel.addEventListener("message", ({ data }) =&gt; {
+  if (!data.op) settle(data);
+});
+
+// The first tab to get this lock becomes the leader; the rest wait in line
+navigator.locks.request("app-db-leader", () =&gt; {
+  worker = new Worker("/db.worker.js");
+  worker.onmessage = ({ data }) =&gt; {
+    if (waiting.has(data.id)) settle(data); // our own request
+    else channel.postMessage(data);         // a reply for another tab
+  };
+  channel.addEventListener("message", ({ data }) =&gt; {
+    if (data.op) worker.postMessage(data);  // a request from another tab
+  });
+  return new Promise(() =&gt; {});             // hold the lock until this tab closes
+});
+
+export function db(op, ...args) {
+  const msg = { id: crypto.randomUUID(), op, args };
+  return new Promise((resolve, reject) =&gt; {
+    const timer = setTimeout(() =&gt; {
+      waiting.delete(msg.id);
+      reject(new Error("No reply from the leader tab"));
+    }, 5000);
+    waiting.set(msg.id, { resolve, reject, timer });
+    if (worker) worker.postMessage(msg);
+    else channel.postMessage(msg);
+  });
+}</code></pre></figure>
+          <figure class="cs-code"><figcaption>JavaScript · db.worker.js (runs only in the leader tab)</figcaption><pre><code>let handle;
+const ready = (async () =&gt; {
+  const root = await navigator.storage.getDirectory();
+  const file = await root.getFileHandle("app.log", { create: true });
+  handle = await file.createSyncAccessHandle();
+})();
+
+const ops = {
+  append(text) {
+    const bytes = new TextEncoder().encode(text + "\n");
+    handle.write(bytes, { at: handle.getSize() });
+    handle.flush();
+    return handle.getSize();
+  },
+  readAll() {
+    const buf = new Uint8Array(handle.getSize());
+    handle.read(buf, { at: 0 });
+    return new TextDecoder().decode(buf);
+  },
+};
+
+onmessage = async ({ data: { id, op, args } }) =&gt; {
+  try {
+    await ready;
+    postMessage({ id, result: ops[op](...args) });
+  } catch (e) {
+    postMessage({ id, error: `${e.name}: ${e.message}` });
+  }
+};</code></pre></figure>
+          <p>Every tab then uses the same call, wherever the file actually lives: <code>await db("append", "hello")</code>. I tested it with three tabs appending at the same time, then closed the leader tab. The next tab took over within half a second and the file kept every line.</p>
+          <p>Two things to handle in a real app:</p>
+          <ul class="cs-list">
+            <li><strong>Requests in flight when the leader closes are lost.</strong> The timeout rejects them. Retry operations that are safe to repeat.</li>
+            <li><strong>Why not a SharedWorker?</strong> In Chrome and Firefox, <code>createSyncAccessHandle()</code> isn't available in a SharedWorker, only in dedicated workers. A SharedWorker can route messages, but a dedicated worker in one tab still has to own the file.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Fix 3: readwrite-unsafe, in Chromium only</h2>
+          <p>Chrome 121 added <code>createSyncAccessHandle({ mode: "readwrite-unsafe" })</code>, which lets several handles write to the same file. It removes the error, not the problem: two tabs writing the same bytes still overwrite each other, and the <a href="https://developer.chrome.com/blog/new-dev-trial-for-multiple-readers-and-writers" target="_blank" rel="nofollow noopener">Chrome team's announcement</a> says you need your own locking. Because Firefox and Safari ignore it, only use it as an optimisation behind <code>supportsLockModes()</code>, with Fix 1 or Fix 2 as the fallback.</p>
+          <p>If your other tabs only need to read, you don't need any of this. <code>fileHandle.getFile()</code> returns a snapshot of the file without taking a lock, and worked in all three browsers while another tab held the file open.</p>
+        </section>
+
+        <section>
+          <h2>What about SQLite WASM?</h2>
+          <p>SQLite in the browser keeps its database in OPFS, so it hits the same lock. According to the <a href="https://sqlite.org/wasm/doc/trunk/persistence.md" target="_blank" rel="nofollow noopener">SQLite WASM persistence docs</a>:</p>
+          <ul class="cs-list">
+            <li><strong><code>opfs-sahpool</code></strong> is the fastest and needs no special headers, but only one connection can be open at a time. A second tab fails.</li>
+            <li><strong><code>opfs</code></strong> works across tabs, but needs the COOP and COEP headers because it uses SharedArrayBuffer, and it's slower.</li>
+          </ul>
+          <p>A common setup is <code>opfs-sahpool</code> inside the leader tab's worker from Fix 2, with the other tabs sending it queries. It's fast, works without special headers, and works in every browser.</p>
+        </section>
+
+        <section>
+          <h2>Try it in your browser</h2>
+          <p>Open this page in two tabs. Click <strong>Hold the file</strong> in one, then <strong>Try to open</strong> in the other to see your browser's error. <strong>Open with a Web Lock</strong> waits for the lock instead, and succeeds as soon as you release it in the first tab.</p>
+          <div class="bench card">
+            <div class="bench-controls">
+              <button type="button" class="btn btn-primary btn-sm" id="lock-hold">Hold the file</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="lock-release">Release</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="lock-try">Try to open</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="lock-wait">Open with a Web Lock</button>
+            </div>
+            <div id="lock-out" class="bench-out" aria-live="polite"><p class="bench-meta">Results appear here. The test uses one empty file in this site's private storage. Nothing leaves your device.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Practical rules</h2>
+          <ul class="cs-list">
+            <li><strong>Assume your app is open in more than one tab.</strong> Users open links in new tabs all the time, and restored sessions open several at once.</li>
+            <li><strong>Never open a sync access handle without a plan for the second tab:</strong> a Web Lock, a leader tab, or getFile() for reads.</li>
+            <li><strong>Catch both error names,</strong> NoModificationAllowedError and InvalidStateError, or Safari users get a different bug from everyone else.</li>
+            <li><strong>Don't trust the <code>mode</code> option</strong> without checking for it. It's silently ignored outside Chromium.</li>
+            <li><strong>Close handles in a <code>finally</code> block.</strong> A leaked handle keeps the file locked until the tab closes.</li>
+            <li><strong>Test with two real tabs</strong> in Chrome, Firefox and Safari before you ship. Single-tab tests won't show any of this.</li>
+          </ul>
+        </section>
+
+        <section class="cs-faq">
+          <h2>FAQ</h2>
+          <details>
+            <summary>Why does OPFS throw NoModificationAllowedError?</summary>
+            <p>Because another tab, worker or stream already has the file open. createSyncAccessHandle() takes an exclusive lock on the file by default, so a second open fails until the first handle is closed. This is by design in the File System standard, not a browser bug, and it was still the default in Chrome, Firefox and Safari in November 2026.</p>
+          </details>
+          <details>
+            <summary>Why does Safari throw InvalidStateError instead of NoModificationAllowedError?</summary>
+            <p>WebKit, the engine behind Safari, reports the same lock conflict as InvalidStateError. In my tests Chrome and Firefox threw NoModificationAllowedError, while WebKit threw InvalidStateError for the same situation. Code that only checks for NoModificationAllowedError will miss the error in Safari, so check for both.</p>
+          </details>
+          <details>
+            <summary>Does readwrite-unsafe work in Firefox and Safari?</summary>
+            <p>No. As of November 2026 only Chromium browsers (Chrome 121 and later, Edge and others) support the mode option of createSyncAccessHandle. Firefox and Safari ignore it without an error and return a normal exclusive handle, so the second tab still fails. In my tests that was true for read-only mode too.</p>
+          </details>
+          <details>
+            <summary>Can two tabs read the same OPFS file at the same time?</summary>
+            <p>Yes, with fileHandle.getFile(). It returns a snapshot of the file and doesn't need a lock, and it worked in Chrome, Firefox and Safari's engine while another tab held the file open. Opening a second sync access handle, even in read-only mode, only works in Chromium.</p>
+          </details>
+          <details>
+            <summary>Is the OPFS lock released when a tab is closed?</summary>
+            <p>Yes. In my tests closing a tab that held a sync access handle released the lock in Chrome, Firefox and Safari's engine, and another tab could open the file straight away. A handle you forget to close inside a tab that stays open keeps the file locked until that tab closes or reloads.</p>
+          </details>
+          <details>
+            <summary>Can I open OPFS files from a SharedWorker?</summary>
+            <p>Not with createSyncAccessHandle in Chrome and Firefox: it only exists in dedicated workers. A SharedWorker can coordinate the tabs, but the file itself has to be opened by a dedicated worker in one of them. The leader-tab pattern does that with the Web Locks API.</p>
+          </details>
+          <details>
+            <summary>Does SQLite WASM have the same multi-tab problem?</summary>
+            <p>Yes, because it stores the database in OPFS. The opfs-sahpool VFS keeps the file open and allows one connection at a time, so a second tab fails. The opfs VFS supports several tabs but needs COOP and COEP headers. Many apps run SQLite in one leader tab and send queries to it from the others.</p>
+          </details>
+        </section>
+
+        <section>
+          <h2>How I tested</h2>
+          <ul class="cs-list">
+            <li>Chromium 159, Firefox 159 and WebKit 27.2, driven by Playwright on an M1 MacBook Air, with a persistent profile so storage behaved like a normal browser window.</li>
+            <li>WebKit is the engine Safari uses, but it isn't the exact Safari build you download, so confirm critical behaviour in real Safari on macOS and iOS.</li>
+            <li>Each "tab" was a separate page in the same profile, using its own dedicated worker, which is how a real user's tabs behave.</li>
+            <li>The failure counts are the median of five runs. The exact numbers depend on timing; the point is that every browser fails often without a lock, and none failed with one.</li>
+          </ul>
+        </section>
+
+        <aside class="cs-cta">
+          <div>
+            <p class="eyebrow">Work with me</p>
+            <h2>Need heavy data handling in the browser?</h2>
+            <p>I build offline-first and data-heavy web apps with IndexedDB, OPFS and Web Workers, fast and without bloated libraries. Freelance &amp; contract, remote (EU, CET).</p>
+          </div>
+          <div class="cs-cta-actions">
+            <a href="/#contact" class="btn btn-primary">Get in touch</a>
+            <a href="/#services" class="btn btn-ghost">See services</a>
+          </div>
+        </aside>
+
+        <section class="cs-related">
+          <h2>Related</h2>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/opfs-vs-indexeddb-benchmark/"><span class="rel-kicker">Browser storage</span><strong>OPFS vs IndexedDB: a benchmark you can run yourself</strong></a><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/ios-safari-60fps-limit/"><span class="rel-kicker">Web performance</span><strong>The iOS Safari 60fps limit: making web apps feel native</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a></div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© <span id="footer-year">2026</span> Asset.plus · Alexandru Cobuz</span>
+      <a href="/guides/" class="footer-link">All guides →</a>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+  <script>
+(() => {
+  const out = document.getElementById('lock-out');
+  const btns = ['lock-hold', 'lock-release', 'lock-try', 'lock-wait'].map((id) => document.getElementById(id));
+  if (!out) return;
+  if (!(navigator.storage && navigator.storage.getDirectory) || !window.Worker || !navigator.locks) {
+    out.innerHTML = '<p class="bench-meta">This browser doesn\'t support OPFS with Web Locks.</p>';
+    btns.forEach((b) => { b.disabled = true; });
+    return;
+  }
+
+  // Runs in a dedicated worker, like real OPFS code
+  const src = `
+    const NAME = 'asset-plus-lock-demo.bin';
+    const LOCK = 'asset-plus-lock-demo';
+    let handle = null, release = null;
+    const file = async (name) => (await navigator.storage.getDirectory()).getFileHandle(name, { create: true });
+    const ops = {
+      async detect() {
+        let read = false;
+        const p = await (await file('asset-plus-lock-probe.bin')).createSyncAccessHandle({ get mode() { read = true; return 'readwrite'; } });
+        p.close();
+        try { await (await navigator.storage.getDirectory()).removeEntry('asset-plus-lock-probe.bin'); } catch (e) {}
+        return read;
+      },
+      async hold() {
+        if (handle) return 'This tab already holds the file.';
+        return new Promise((resolve, reject) => {
+          navigator.locks.request(LOCK, { ifAvailable: true }, async (lock) => {
+            if (!lock) { resolve('Another tab already holds the file. Release it there first.'); return; }
+            try { handle = await (await file(NAME)).createSyncAccessHandle(); }
+            catch (e) { reject(e); return; }
+            resolve('Holding the file. Now try to open it from another tab.');
+            await new Promise((r) => { release = r; });
+            handle.close(); handle = null;
+          });
+        });
+      },
+      async release() {
+        if (!release) return 'This tab isn\\'t holding the file.';
+        release(); release = null;
+        return 'Released.';
+      },
+      async try() {
+        const h = await (await file(NAME)).createSyncAccessHandle();
+        h.close();
+        return 'Opened it: no other tab is holding the file.';
+      },
+      async wait() {
+        const t0 = performance.now();
+        await navigator.locks.request(LOCK, async () => {
+          const h = await (await file(NAME)).createSyncAccessHandle();
+          h.close();
+        });
+        return 'Opened it after waiting ' + Math.round(performance.now() - t0) + ' ms for the lock.';
+      },
+    };
+    onmessage = async ({ data: { id, op } }) => {
+      try { postMessage({ id, result: await ops[op]() }); }
+      catch (e) { postMessage({ id, error: e.name + ': ' + e.message }); }
+    };`;
+
+  let worker;
+  try { worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' }))); }
+  catch (e) { out.innerHTML = '<p class="bench-meta">This browser can\'t run the demo in a Web Worker.</p>'; return; }
+
+  let seq = 0;
+  const pending = new Map();
+  worker.onmessage = ({ data }) => { const cb = pending.get(data.id); pending.delete(data.id); if (cb) cb(data); };
+  const run = (op) => new Promise((resolve) => { const id = ++seq; pending.set(id, resolve); worker.postMessage({ id, op }); });
+
+  const lines = [];
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let support = '';
+  const render = () => {
+    out.innerHTML = (support ? `<p class="bench-meta">${support}</p>` : '') + lines.map((l) => `<p class="bench-meta">${l}</p>`).join('');
+  };
+  const log = (text) => { lines.unshift(esc(text)); lines.length = Math.min(lines.length, 6); render(); };
+
+  run('detect').then(({ result, error }) => {
+    if (error) { support = 'Lock modes: could not check (' + esc(error) + ').'; }
+    else support = result
+      ? 'This browser supports the mode option (read-only, readwrite-unsafe).'
+      : 'This browser ignores the mode option: every sync access handle is exclusive.';
+    render();
+  });
+
+  const labels = { hold: 'Hold', release: 'Release', try: 'Try to open', wait: 'Web Lock' };
+  ['hold', 'release', 'try', 'wait'].forEach((op, i) => {
+    btns[i].addEventListener('click', async () => {
+      if (op === 'wait') log('Web Lock: waiting for the lock…');
+      const { result, error } = await run(op);
+      log(labels[op] + ': ' + (error || result));
+    });
+  });
+})();
+  </script>
+</body>
+
+</html>

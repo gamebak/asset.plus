@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://asset.plus/</loc>
-    <lastmod>2026-11-21</lastmod>
+    <lastmod>2026-11-28</lastmod>
   </url>
   <url>
     <loc>https://asset.plus/work/private-ai-self-hosted-llm/</loc>
@@ -13,7 +13,7 @@
   </url>
   <url>
     <loc>https://asset.plus/guides/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-28</lastmod>
   </url>
   <url>
     <loc>https://asset.plus/guides/mcp-server-nodejs-internal-tools/</loc>
@@ -87,9 +87,16 @@
   </url>
   <url>
     <loc>https://asset.plus/guides/opfs-vs-indexeddb-benchmark/</loc>
-    <lastmod>2026-11-26</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <image:image>
       <image:loc>https://asset.plus/assets/cards/opfs-vs-indexeddb-benchmark-16x9.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://asset.plus/guides/opfs-multiple-tabs/</loc>
+    <lastmod>2026-11-28</lastmod>
+    <image:image>
+      <image:loc>https://asset.plus/assets/cards/opfs-multiple-tabs-16x9.jpg</image:loc>
     </image:image>
   </url>
 </urlset>

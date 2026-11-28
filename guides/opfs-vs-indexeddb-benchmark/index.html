@@ -309,6 +309,7 @@
             </table>
           </div>
           <p>If you're unsure, start with IndexedDB. It's the safer default for app data, and you can move the large binary parts to OPFS later, when you have numbers that show it's worth it.</p>
+          <p>Going with OPFS? Plan for your app being open in two tabs: the second tab can't open a file the first one holds. See <a href="/guides/opfs-multiple-tabs/">OPFS in multiple tabs: fixing NoModificationAllowedError</a>.</p>
         </section>
 
         <section>
@@ -447,7 +448,7 @@ onmessage = async ({ data: { type, id, record } }) =&gt; {
 
         <section class="cs-related">
           <h2>Related</h2>
-          <div class="rel-grid"><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/guides/aws-lambda-cost-optimization-rust-arm64/"><span class="rel-kicker">Serverless & AWS</span><strong>AWS Lambda cost optimization: Node.js, Rust and arm64</strong></a><a class="card rel-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><strong>Private AI translation with self-hosted LLMs</strong></a></div>
+          <div class="rel-grid"><a class="card rel-card" href="/guides/opfs-multiple-tabs/"><span class="rel-kicker">Browser storage</span><strong>OPFS in multiple tabs: fixing NoModificationAllowedError</strong></a><a class="card rel-card" href="/guides/localstorage-done-right/"><span class="rel-kicker">Browser storage</span><strong>localStorage done right: a safe 30-line wrapper</strong></a><a class="card rel-card" href="/guides/reduce-npm-dependencies/"><span class="rel-kicker">Lean software</span><strong>Less code = more: reducing npm dependencies</strong></a><a class="card rel-card" href="/work/private-ai-self-hosted-llm/"><span class="rel-kicker">Case study</span><strong>Private AI translation with self-hosted LLMs</strong></a></div>
         </section>
       </div>
     </article>
